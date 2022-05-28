@@ -1,22 +1,25 @@
 
-
-## 安装依赖
+# 初始下载后
+## 1. 安装依赖
 
 ```bash
-pnpm install
+$ pnpm install
 ```
 
-## 创建 ts 项目
+## 2. 执行 style、util 构建
+
+```
+$ pnpm run build --filter @study/style
+$ pnpm run build --filter @study/util
+```
+## 3. 创建项目
+### 创建 ts 项目
 
 ```base
-npm run create:ts
+$ npm run create:ts
 ```
-## 创建 js 项目
+### 创建 js 项目
 
 ```
-npm run create:js
+$ npm run create:js
 ```
-
-## style
-
-是 antd 官方的调色板，里面有基础的样式，跟 less 变量
