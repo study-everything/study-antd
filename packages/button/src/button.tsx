@@ -1,20 +1,12 @@
 /* eslint-disable react/button-has-type */
 import * as React from 'react';
 import classNames from 'classnames';
-import { Wave, tuple, warning, cloneElement, omit } from '@study/util';
 import Group, { GroupSizeContext } from './button-group';
-
+import { Wave, tuple, warning, cloneElement, omit } from '@study/util';
 import LoadingIcon from './LoadingIcon';
 
 export type SizeType = 'small' | 'middle' | 'large' | undefined;
-const ButtonTypes = tuple('default', 'primary', 'ghost', 'dashed', 'link', 'text');
-export type ButtonType = typeof ButtonTypes[number];
-const ButtonShapes = tuple('default', 'circle', 'round');
-export type ButtonShape = typeof ButtonShapes[number];
-const ButtonHTMLTypes = tuple('submit', 'button', 'reset');
-export type ButtonHTMLType = typeof ButtonHTMLTypes[number];
 
-export type LegacyButtonType = ButtonType | 'danger';
 const rxTwoCNChar = /^[\u4e00-\u9fa5]{2}$/;
 const isTwoCNChar = rxTwoCNChar.test.bind(rxTwoCNChar);
 function isString(str: any) {
@@ -33,7 +25,7 @@ function isReactFragment(node: React.ReactNode) {
 function insertSpace(child: React.ReactChild, needInserted: boolean) {
   // Check the child if is undefined or null.
   if (child == null) {
-    return null;
+    return;
   }
   const SPACE = needInserted ? ' ' : '';
   // strictNullChecks oops.
@@ -79,6 +71,14 @@ function spaceChildren(children: React.ReactNode, needInserted: boolean) {
   );
 }
 
+const ButtonTypes = tuple('default', 'primary', 'ghost', 'dashed', 'link', 'text');
+export type ButtonType = typeof ButtonTypes[number];
+const ButtonShapes = tuple('default', 'circle', 'round');
+export type ButtonShape = typeof ButtonShapes[number];
+const ButtonHTMLTypes = tuple('submit', 'button', 'reset');
+export type ButtonHTMLType = typeof ButtonHTMLTypes[number];
+
+export type LegacyButtonType = ButtonType | 'danger';
 export function convertLegacyProps(type?: LegacyButtonType): ButtonProps {
   if (type === 'danger') {
     return { danger: true };

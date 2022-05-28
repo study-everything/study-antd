@@ -1,7 +1,7 @@
 import * as React from 'react';
 import classNames from 'classnames';
 import { warning } from '@study/util';
-import type { SizeType } from './button';
+import { SizeType } from './button';
 
 export interface ButtonGroupProps {
   size?: SizeType;

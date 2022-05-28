@@ -1,6 +1,10 @@
 {
   "include": ["./src"],
+<<<<<<< HEAD
   "exclude": [
+=======
+	"exclude": [
+>>>>>>> 3faa74eac0fd5e130a6a624a269e7603578f1e50
     "node_modules",
     "lib",
     "esm",
