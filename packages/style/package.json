@@ -1,0 +1,10 @@
+{
+	"name": "@study/style",
+	"version": "1.0.0",
+	"module": "esm/index.js",
+	"main": "cjs/index.js",
+	"scripts": {
+		"compile": "lessc ./src/index.less color.css",
+		"build": "gulp build"
+	}
+}

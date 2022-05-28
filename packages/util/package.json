@@ -1,0 +1,19 @@
+{
+	"name": "@study/util",
+	"version": "1.0.0",
+	"module": "esm/index.js",
+	"main": "cjs/index.js",
+	"typings": "lib/index.d.ts",
+	"scripts": {
+		"build": "node ./scripts/build"
+	},
+	"dependencies": {
+		"rc-util": "^5.21.4"
+	},
+	"devDependencies": {
+		"react": "^18.1.0"
+	},
+	"peerDependencies": {
+		"react": "^18.1.0"
+	}
+}
