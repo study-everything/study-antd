@@ -9,13 +9,12 @@ export interface ButtonGroupProps {
   className?: string;
   prefixCls?: string;
   children?: React.ReactNode;
-	direction?: "ltr" | "rtl" | undefined
+  direction?: 'ltr' | 'rtl' | undefined;
 }
 
 export const GroupSizeContext = React.createContext<SizeType | undefined>(undefined);
 
 const ButtonGroup: React.FC<ButtonGroupProps> = props => {
-
   const { prefixCls, size, className, direction = 'ltr', ...others } = props;
 
   // large => lg

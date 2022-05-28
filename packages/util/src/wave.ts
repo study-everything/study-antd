@@ -4,18 +4,16 @@ import { supportRef, composeRef } from 'rc-util/lib/ref';
 import raf from './raf';
 import { cloneElement } from './reactNode';
 
-
-
 function getGlobalPrefixCls() {
 	return 'ant';
 }
 
 const getPrefixCls = (suffixCls?: string, customizePrefixCls?: string) => {
 	if (customizePrefixCls) {
-		return customizePrefixCls
-	};
+		return customizePrefixCls;
+	}
 	return suffixCls ? `${getGlobalPrefixCls()}-${suffixCls}` : getGlobalPrefixCls();
-}
+};
 
 let styleForPseudo: HTMLStyleElement | null;
 
@@ -101,11 +99,6 @@ export default class Wave extends React.Component<WaveProps> {
 		) {
 			extraNode.style.borderColor = waveColor;
 
-			const nodeRoot = node.getRootNode?.() || node.ownerDocument;
-			// @ts-ignore
-			const nodeBody: Element =
-				nodeRoot instanceof Document ? nodeRoot.body : (nodeRoot.firstChild as Element) ?? nodeRoot;
-
 			styleForPseudo = updateCSS(
 				`
       [${getPrefixCls('')}-click-animating-without-extra-node='true']::after, .${getPrefixCls(
@@ -158,7 +151,9 @@ export default class Wave extends React.Component<WaveProps> {
 			node.getAttribute('disabled') ||
 			node.className.indexOf('disabled') >= 0
 		) {
-			return;
+			return {
+				cancel: () => { },
+			};
 		}
 		const onClick = (e: MouseEvent) => {
 			// Fix radio button click twice

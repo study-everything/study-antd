@@ -103,7 +103,7 @@ export interface BaseButtonProps {
   danger?: boolean;
   block?: boolean;
   children?: React.ReactNode;
-	direction: "ltr" | "rtl" | undefined
+  direction: 'ltr' | 'rtl' | undefined;
 }
 
 // Typescript will make optional not optional if use Pick with union.
@@ -148,7 +148,7 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
     /** If we extract items here, we don't need use omit.js */
     // React does not recognize the `htmlType` prop on a DOM element. Here we pick it out of `rest`.
     htmlType = 'button' as ButtonProps['htmlType'],
-		direction,
+    direction,
     ...rest
   } = props;
 
@@ -257,10 +257,7 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
       <LoadingIcon existIcon={!!icon} prefixCls={prefixCls} loading={!!innerLoading} />
     );
 
-  const kids =
-    children || children === 0
-      ? spaceChildren(children, isNeedInserted())
-      : null;
+  const kids = children || children === 0 ? spaceChildren(children, isNeedInserted()) : null;
 
   const linkButtonRestProps = omit(rest as AnchorButtonProps & { navigate: any }, ['navigate']);
   if (linkButtonRestProps.href !== undefined) {
