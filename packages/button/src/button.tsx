@@ -1,12 +1,20 @@
 /* eslint-disable react/button-has-type */
 import * as React from 'react';
 import classNames from 'classnames';
-import Group, { GroupSizeContext } from './button-group';
 import { Wave, tuple, warning, cloneElement, omit } from '@study/util';
+import Group, { GroupSizeContext } from './button-group';
+
 import LoadingIcon from './LoadingIcon';
 
 export type SizeType = 'small' | 'middle' | 'large' | undefined;
+const ButtonTypes = tuple('default', 'primary', 'ghost', 'dashed', 'link', 'text');
+export type ButtonType = typeof ButtonTypes[number];
+const ButtonShapes = tuple('default', 'circle', 'round');
+export type ButtonShape = typeof ButtonShapes[number];
+const ButtonHTMLTypes = tuple('submit', 'button', 'reset');
+export type ButtonHTMLType = typeof ButtonHTMLTypes[number];
 
+export type LegacyButtonType = ButtonType | 'danger';
 const rxTwoCNChar = /^[\u4e00-\u9fa5]{2}$/;
 const isTwoCNChar = rxTwoCNChar.test.bind(rxTwoCNChar);
 function isString(str: any) {
@@ -25,7 +33,7 @@ function isReactFragment(node: React.ReactNode) {
 function insertSpace(child: React.ReactChild, needInserted: boolean) {
   // Check the child if is undefined or null.
   if (child == null) {
-    return;
+    return null;
   }
   const SPACE = needInserted ? ' ' : '';
   // strictNullChecks oops.
@@ -71,14 +79,6 @@ function spaceChildren(children: React.ReactNode, needInserted: boolean) {
   );
 }
 
-const ButtonTypes = tuple('default', 'primary', 'ghost', 'dashed', 'link', 'text');
-export type ButtonType = typeof ButtonTypes[number];
-const ButtonShapes = tuple('default', 'circle', 'round');
-export type ButtonShape = typeof ButtonShapes[number];
-const ButtonHTMLTypes = tuple('submit', 'button', 'reset');
-export type ButtonHTMLType = typeof ButtonHTMLTypes[number];
-
-export type LegacyButtonType = ButtonType | 'danger';
 export function convertLegacyProps(type?: LegacyButtonType): ButtonProps {
   if (type === 'danger') {
     return { danger: true };
@@ -103,7 +103,7 @@ export interface BaseButtonProps {
   danger?: boolean;
   block?: boolean;
   children?: React.ReactNode;
-	direction: "ltr" | "rtl" | undefined
+  direction: 'ltr' | 'rtl' | undefined;
 }
 
 // Typescript will make optional not optional if use Pick with union.
@@ -148,7 +148,7 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
     /** If we extract items here, we don't need use omit.js */
     // React does not recognize the `htmlType` prop on a DOM element. Here we pick it out of `rest`.
     htmlType = 'button' as ButtonProps['htmlType'],
-		direction,
+    direction,
     ...rest
   } = props;
 
@@ -257,10 +257,7 @@ const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (pr
       <LoadingIcon existIcon={!!icon} prefixCls={prefixCls} loading={!!innerLoading} />
     );
 
-  const kids =
-    children || children === 0
-      ? spaceChildren(children, isNeedInserted())
-      : null;
+  const kids = children || children === 0 ? spaceChildren(children, isNeedInserted()) : null;
 
   const linkButtonRestProps = omit(rest as AnchorButtonProps & { navigate: any }, ['navigate']);
   if (linkButtonRestProps.href !== undefined) {

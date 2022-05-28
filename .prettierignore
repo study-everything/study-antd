@@ -1,0 +1,17 @@
+package.json
+
+lib/
+esm/
+cjs/
+packages/*/*.js
+packages/*/*.jsx
+.gitignore
+.npmignore
+.prettierignore
+.DS_Store
+.editorconfig
+.eslintignore
+.history
+**/*.yml
+packages/style/src/color/*.less
+templates/**/*
