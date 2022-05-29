@@ -1,0 +1,83 @@
+@import '~@study/style/src/themes/index.less';
+@import '~@study/style/src/mixins/index.less';
+
+@prefix: ~'@{ant-prefix}-carousel';
+
+.@{prefix} {
+  position: relative;
+  overflow: hidden;
+
+  &-warper {
+    position: relative;
+    word-break: keep-all;
+    transition: transform 0.35s ease-in-out;
+  }
+
+  &-item {
+    display: inline-block;
+    width: 100%;
+  }
+
+  &-dot {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &-bottom,
+    &-top {
+      width: 100%;
+    }
+
+    &-bottom {
+      bottom: 10px;
+    }
+
+    &-top {
+      top: 10px;
+    }
+
+    &-right {
+      right: 10px;
+    }
+
+    &-left {
+      left: 10px;
+    }
+
+    &_item {
+      display: inline-block;
+      width: @carousel-dot-width;
+      height: @carousel-dot-height;
+      background-color: @white;
+      border-radius: @border-radius-base;
+      cursor: pointer;
+      transition: width 0.1s ease-in-out;
+
+      &:not(:first-of-type) {
+        margin-left: @margin-xss;
+      }
+
+      &--active {
+        width: @carousel-dot-active-width;
+      }
+    }
+
+    &-right,
+    &-left {
+      top: 0;
+      flex-direction: column;
+      height: 100%;
+
+      .@{prefix}-dot_item {
+        width: @carousel-dot-height;
+        height: @carousel-dot-width;
+        margin-left: 0;
+
+        &:not(:first-of-type) {
+          margin-top: @margin-xss;
+        }
+      }
+    }
+  }
+}
