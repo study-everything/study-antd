@@ -27,7 +27,7 @@ async function buildPackage(options) {
       )}`,
     );
   } catch (error) {
-    console.error(`组件 ${chalk.cyan(packageJson.name)} 打包失败`);
+    // console.error(`组件 ${chalk.cyan(packageJson.name)} 打包失败`);
     console.log(error.toString('minimal'));
     process.exit(1);
   }
