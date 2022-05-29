@@ -4,9 +4,9 @@ const getRollupConfig = require('./getRollupConfig');
 const { isTypescript, getPackageJson } = require('./shared');
 const chalk = require('chalk');
 async function buildPackage(options) {
+  const packageJson = await getPackageJson();
   try {
     const { sourcemap, formats } = options;
-    const packageJson = await getPackageJson();
     console.log(`正在打包组件 ${chalk.cyan(packageJson.name)}...`);
     let startTime = Date.now();
     if (isTypescript()) {
