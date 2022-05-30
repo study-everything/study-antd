@@ -23,7 +23,7 @@ storiesOf('Carousel', module).add('Demo', () => {
   return (
     <div style={{ width: 300, overflow: 'hidden' }}>
       <div>
-        <button onClick={() => ref.current.goTo(0)} type="button">
+        <button onClick={() => ref.current.goTo(0, true)} type="button">
           回到0
         </button>
         <button onClick={() => ref.current.prev()} type="button">
@@ -42,7 +42,13 @@ storiesOf('Carousel', module).add('Demo', () => {
           ))}
         </div>
       </div>
-      <Carousel afterChange={onChange} ref={ref} dotPosition={position}>
+      <Carousel
+        afterChange={onChange}
+        ref={ref}
+        dotPosition={position}
+        autoplay={false}
+        easing="ease-in"
+      >
         <div>
           <h3 style={contentStyle}>1</h3>
         </div>

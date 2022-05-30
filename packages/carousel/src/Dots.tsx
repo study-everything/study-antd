@@ -8,6 +8,7 @@ export default function CarouselDot(props: {
   position: 'top' | 'bottom' | 'left' | 'right';
   current: number;
   onChange: (current: number) => void;
+  className: string;
 }) {
   const handleClick = useEvent((next: number) => {
     props.onChange(next);
@@ -18,6 +19,7 @@ export default function CarouselDot(props: {
       className={classNames(
         `${props.prefixCls}-carousel-dot`,
         `${props.prefixCls}-carousel-dot-${props.position}`,
+        props.className,
       )}
     >
       {new Array(props.length).fill(0).map((_, index) => (

@@ -12,15 +12,19 @@ import classNames from 'classnames';
 import CarouselItem from './CarouselItem';
 import CarouselDot from './Dots';
 import useEvent from './hooks/useEvent';
+import useInterval from './hooks/useInterval';
 
 export interface CarouselProps {
   prefixCls?: string;
   className?: string;
   autoplay?: boolean;
   dotPosition?: 'top' | 'bottom' | 'left' | 'right';
-  dots?: string | { className?: string };
-  easing?: 'linear';
-  effect?: 'scrollx' | 'fade';
+  dots?: boolean | { className?: string };
+  /**
+   * transition动画方式
+   */
+  easing?: string;
+  // effect?: 'scrollx' | 'fade';
   afterChange?: (current: number) => void;
   beforeChange?: (from: number, to: number) => void;
 }
@@ -35,13 +39,19 @@ const Carousel: ForwardRefRenderFunction<CarouselRef, PropsWithChildren<Carousel
   props,
   ref,
 ) => {
-  const { prefixCls = 'ant', dotPosition = 'bottom', className } = props;
+  const {
+    prefixCls = 'ant',
+    dotPosition = 'bottom',
+    className,
+    autoplay = true,
+    easing = 'linear',
+    dots = true,
+  } = props;
+  const transitioning = useRef(false);
   const carouselRef = useRef<HTMLDivElement>(null);
   const carouselWrapRef = useRef<HTMLDivElement>(null);
-
   const [current, setCurrent] = useState(1);
   const [itemW, setItemW] = useState(0);
-
   const [isTransition, setTransition] = useState(true);
 
   const dotActive = useMemo(() => {
@@ -85,43 +95,57 @@ const Carousel: ForwardRefRenderFunction<CarouselRef, PropsWithChildren<Carousel
     setItemW(width);
   }, []);
 
-  useImperativeHandle(ref, () => ({
-    goTo(slideNumber: number, dontAnimate: boolean) {
-      if (dontAnimate) {
-        setTransition(false);
-        carouselRef.current.style.transition = 'none';
-      }
-      if (slideNumber < 0 || slideNumber > Children.count(props.children)) {
+  const goTo = useEvent((dir: 'prev' | 'next' | number, needTransition: boolean = true) => {
+    if (transitioning.current) {
+      return;
+    }
+    let next: number = 0;
+
+    if (typeof dir === 'number') {
+      if (dir < 0 || dir > Children.count(props.children)) {
         throw new Error('超出了边界');
       }
       let buf = 0;
       if (current > Children.count(props.children)) {
         buf += Children.count(props.children);
       }
-      setCurrent(buf + slideNumber + 1);
-    },
-    next() {
-      setTransition(true);
-      setCurrent(prev => {
-        const next = prev + 1;
+      next = buf + dir + 1;
+    } else if (dir === 'prev') {
+      next = current - 1;
+    } else if (dir === 'next') {
+      next = current + 1;
+    }
 
-        return next;
-      });
-    },
-    prev() {
-      setTransition(true);
-      setCurrent(prev => {
-        const next = prev - 1;
+    transitioning.current = needTransition;
+    setTransition(needTransition);
+    props.beforeChange?.(current, next);
+    setCurrent(next);
+  });
 
-        return next;
-      });
+  const { start, pause } = useInterval(() => goTo('next'), 3000, autoplay);
+
+  useImperativeHandle(ref, () => ({
+    goTo(slideNumber: number, dontAnimate: boolean) {
+      pause();
+      goTo(slideNumber, !dontAnimate);
+    },
+    next: () => {
+      pause();
+      goTo('next');
+    },
+    prev: () => {
+      pause();
+      goTo('prev');
     },
   }));
 
   const handleTransitionEnd = useEvent(() => {
+    transitioning.current = false;
+    if (autoplay) {
+      start();
+    }
     if (current >= carouselItemCount - 1 || current <= 0) {
-      setTransition(false);
-      setCurrent(Children.count(props.children));
+      goTo(Children.count(props.children) - 1, false);
     }
   });
 
@@ -136,19 +160,22 @@ const Carousel: ForwardRefRenderFunction<CarouselRef, PropsWithChildren<Carousel
         style={{
           width: warperW,
           transform: `translateX(-${itemW * current}px)`,
-          ...(!isTransition ? { transition: 'none' } : {}),
+          transition: isTransition ? `transform  0.35s ${easing}` : 'none',
         }}
       >
         {newChildren}
       </div>
 
-      <CarouselDot
-        current={dotActive}
-        length={Children.count(props.children)}
-        prefixCls={prefixCls}
-        position={dotPosition}
-        onChange={setCurrent}
-      />
+      {!!dots && (
+        <CarouselDot
+          current={dotActive}
+          length={Children.count(props.children)}
+          prefixCls={prefixCls}
+          position={dotPosition}
+          onChange={goTo}
+          className={typeof dots === 'boolean' ? '' : dots.className}
+        />
+      )}
     </div>
   );
 };

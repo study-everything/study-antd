@@ -10,7 +10,6 @@
   &-warper {
     position: relative;
     word-break: keep-all;
-    transition: transform 0.35s ease-in-out;
   }
 
   &-item {
@@ -49,10 +48,10 @@
       display: inline-block;
       width: @carousel-dot-width;
       height: @carousel-dot-height;
-      background-color: @white;
+      background-color: rgba(255, 255, 255, 0.2);
       border-radius: @border-radius-base;
       cursor: pointer;
-      transition: width 0.1s ease-in-out;
+      transition: all 0.1s ease-in-out;
 
       &:not(:first-of-type) {
         margin-left: @margin-xss;
@@ -60,6 +59,7 @@
 
       &--active {
         width: @carousel-dot-active-width;
+        background-color: rgba(255, 255, 255, 1);
       }
     }
 
