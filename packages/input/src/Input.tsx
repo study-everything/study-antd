@@ -9,30 +9,38 @@ export interface InputProps {
 	size?: inputSize;
 	value?: string;
 	type?: React.HTMLInputTypeAttribute
-	onChange?: () => void;
+	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 	defaultValue?: string;
 	bordered?: string;
 	className?: string;
 	prefixCls?: string;
+	placeholder?: string;
 }
 
 
 export const Input: React.FC<InputProps> = (props) => {
 	const {
 		className,
-		prefixCls = 'ant-btn',
+		prefixCls = 'ant-input',
 		size = 'middle',
-		type = 'text'
+		type = 'text',
+		value,
+		onChange,
+		placeholder
 	} = props;
 
 	const classes = classnames(className, {
-		[`${prefixCls}-${size}`]: true
+		[`${prefixCls}-${size}`]: true,
+		'ant-input': true
 	});
 
 	return <>
 		<input
 			className={classes}
+			placeholder={placeholder}
 			type={type}
+			value={value}
+			onChange={onChange}
 		/>
 	</>
 }

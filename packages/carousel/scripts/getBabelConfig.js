@@ -1,5 +1,4 @@
 
-
 function getBabelConfig(isEsm){
 
 	return {

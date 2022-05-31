@@ -1,5 +1,5 @@
 {
-	"name": "@study/alert",
+	"name": "@study/carousel",
 	"main": "cjs/index.js",
 	"module": "esm/index.js",
 	"typings": "lib/index.d.ts",
