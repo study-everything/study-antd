@@ -15,6 +15,7 @@
 	"dependencies": {
 		"@study/style": "^1.0.0",
 		"@study/util": "^1.0.0",
+		"@types/react": "^18.0.9",
 		"classname": "^0.0.0",
 		"tslib": "^2.4.0"
 	}
