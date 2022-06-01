@@ -71,6 +71,7 @@
     "rollup-plugin-typescript2": "^0.31.2",
     "style-loader": "^3.3.1",
     "stylelint": "^14.8.5",
+    "stylelint-config-prettier": "^9.0.3",
     "stylelint-config-rational-order": "^0.1.2",
     "stylelint-config-standard": "^25.0.0",
     "through2": "^4.0.2",
@@ -85,6 +86,7 @@
     "@babel/runtime-corejs3": "^7.18.0",
     "chalk": "4",
     "child-process-promise": "^2.2.1",
-    "rc-util": "^5.21.4"
+    "rc-util": "^5.21.4",
+    "stylelint-declaration-block-no-ignored-properties": "^2.5.0"
   }
 }
