@@ -15,10 +15,12 @@ export type SwitchClickEventHandler = SwitchChangeEventHandler;
 
 export interface SwitchProps {
 	size?: SwitchSize; // 开关大小，可选值：default small
+	className?: string; // 传入的类名
 	loading?: boolean; // 加载标识符
 	checked?: boolean; // 开关状态
 	defaultChecked?: boolean; // 默认开关状态
 	disabled?: boolean; // 是否为不可用状态
+	autoFocus?: boolean; // 组件是否自动获取焦点
 	checkedChildren?: React.ReactNode; // 选中时的内容
 	unCheckedChildren?: React.ReactNode; // 非选中时的内容
 	onClick?: SwitchClickEventHandler; // 点击事件
@@ -33,11 +35,13 @@ enum KeyCodeEnum {
 
 const prefixCls = 'ant-switch'
 
-export const Switch = React.forwardRef<any, SwitchProps>
+export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>
 (
 	(
 		{
 			size: customizeSize,
+			autoFocus = false,
+			className,
 			checked,
 			defaultChecked,
 			checkedChildren,
@@ -109,11 +113,11 @@ export const Switch = React.forwardRef<any, SwitchProps>
 			</div>
 		);
 
-		const classes = classNames(`${prefixCls}`, {
+		const classes = classNames(`${prefixCls}`, className, {
 			[`${prefixCls}-checked`]: innerChecked,
 			[`${prefixCls}-disabled`]: disabled,
 			[`${prefixCls}-small`]: customizeSize === 'small',
-			[`${prefixCls}-loading`]: loading
+			[`${prefixCls}-loading`]: loading,
 		})
 
 		return (

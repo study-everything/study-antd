@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import type {ComponentMeta, ComponentStory} from '@storybook/react';
 import { Button } from 'antd';
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
@@ -20,7 +20,7 @@ const switchWithSize = () => (
 			<Switch />
 		</div>
 		<div>
-			<Switch size="small" />
+			<Switch className='custom-switch' size="small" />
 		</div>
 	</div>
 )
@@ -91,3 +91,21 @@ const SwitchWithLoading = () => (
 	)
 export const switchWithLoading: ComponentStory<typeof Switch> = () => SwitchWithLoading();
 switchWithLoading.storyName = 'Loading';
+
+const SwitchWithOriginFunc = () => {
+	const switchRef = useRef(null);
+
+	useEffect(() => {
+		switchRef.current.focus();
+	}, [])
+
+	return (
+		<>
+			<div className='origin-func'>通过ref已自动执行focus，可以直接进行键盘左右切换</div>
+			<Switch ref={switchRef} defaultChecked />
+		</>
+	)
+}
+
+export const switchWithOriginFunc: ComponentStory<typeof Switch> = () => SwitchWithOriginFunc();
+switchWithOriginFunc.storyName = 'OriginFunc';
