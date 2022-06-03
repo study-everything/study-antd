@@ -1,5 +1,5 @@
 {
-	"name": "@study/message",
+	"name": "@study/skeleton",
 	"main": "cjs/index.js",
 	"module": "esm/index.js",
 	"typings": "lib/index.d.ts",
@@ -16,8 +16,6 @@
 		"@study/style": "^1.0.0",
 		"@study/util": "^1.0.0",
 		"classname": "^0.0.0",
-		"rc-motion": "^2.6.0",
-		"react-dom": "^18.1.0",
 		"tslib": "^2.4.0"
 	}
 }
