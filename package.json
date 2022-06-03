@@ -10,7 +10,8 @@
     "build-storybook": "build-storybook",
     "lint:script": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:style": "stylelint 'packages/**/*.less'",
-    "prettier": "prettier -c --write **/*"
+    "prettier": "prettier -c --write **/*",
+    "start": "pnpm run storybook"
   },
   "keywords": [],
   "author": "",

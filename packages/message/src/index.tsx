@@ -1,4 +1,5 @@
+export type { MessageApi } from './Message';
 
-export type { MessageProps } from './message';
+import message from './Message';
 
-export { Message } from './message';
+export { message };
