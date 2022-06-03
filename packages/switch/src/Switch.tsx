@@ -3,8 +3,15 @@ import classNames from 'classnames'
 import { Wave, warning } from '@study/util'
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
 import useMergedState from 'rc-util/lib/hooks/useMergedState';
+import KeyCode from 'rc-util/lib/KeyCode';
 
 export type SwitchSize = 'small' | 'default';
+
+export type SwitchChangeEventHandler = (
+	checked: boolean,
+	event: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>,
+) => void;
+export type SwitchClickEventHandler = SwitchChangeEventHandler;
 
 export interface SwitchProps {
 	size?: SwitchSize; // 开关大小，可选值：default small
@@ -12,8 +19,17 @@ export interface SwitchProps {
 	checked?: boolean; // 开关状态
 	defaultChecked?: boolean; // 默认开关状态
 	disabled?: boolean; // 是否为不可用状态
+	checkedChildren?: React.ReactNode; // 选中时的内容
+	unCheckedChildren?: React.ReactNode; // 非选中时的内容
+	onClick?: SwitchClickEventHandler; // 点击事件
+	onChange?: SwitchChangeEventHandler; // 标识符change事件
+	onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
 }
 
+enum KeyCodeEnum {
+	'LEFT'= KeyCode.LEFT,
+	'RIGHT'= KeyCode.RIGHT
+}
 
 const prefixCls = 'ant-switch'
 
@@ -24,8 +40,13 @@ export const Switch = React.forwardRef<any, SwitchProps>
 			size: customizeSize,
 			checked,
 			defaultChecked,
+			checkedChildren,
+			unCheckedChildren,
 			disabled,
 			loading,
+			onClick,
+			onChange,
+			onKeyDown,
 			...props
 		},
 		ref
@@ -46,20 +67,40 @@ export const Switch = React.forwardRef<any, SwitchProps>
 			event: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>,
 		) {
 			let mergedChecked = innerChecked;
-
+			// 非禁用状态下
 			if (!disabled) {
 				mergedChecked = newChecked;
 				setInnerChecked(mergedChecked);
-				// onChange?.(mergedChecked, event);
+				// 执行change回调 注入标识符
+				onChange?.(mergedChecked, event);
 			}
 
 			return mergedChecked;
 		}
 
+		const strategyMatchKeyCode = {
+			[KeyCodeEnum.LEFT]: (e) => {
+				triggerChange(false, e);
+			},
+			[KeyCodeEnum.RIGHT]: (e) => {
+				triggerChange(true, e);
+			}
+		}
+
+
+		const onInternalKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+			try {
+				strategyMatchKeyCode[e.which](e);
+				onKeyDown?.(e);
+			} catch (err: any) {
+				console.error(`onInternalKeyDown error:${err.message}`)
+			}
+		}
+
 		function onInternalClick(e: React.MouseEvent<HTMLButtonElement>) {
 			const ret = triggerChange(!innerChecked, e);
-			// [Legacy] trigger onClick with value
-			// onClick?.(ret, e);
+			// 执行回调事件 注入对应的标识符
+			onClick?.(ret, e);
 		}
 
 		const loadingIcon = (
@@ -74,19 +115,24 @@ export const Switch = React.forwardRef<any, SwitchProps>
 			[`${prefixCls}-small`]: customizeSize === 'small',
 			[`${prefixCls}-loading`]: loading
 		})
+
 		return (
 			<Wave insertExtraNode>
 				<button
 					type="button"
 					role="switch"
 					aria-checked={innerChecked}
-					disabled={disabled}
+					disabled={disabled || loading}
 					className={classes}
 					ref={ref}
 					{...props}
 					onClick={onInternalClick}
+					onKeyDown={onInternalKeyDown}
 				>
 					{loadingIcon}
+					<span className={`${prefixCls}-inner`}>
+						{innerChecked ? checkedChildren : unCheckedChildren }
+					</span>
 				</button>
 			</Wave>
 		)
