@@ -1,12 +1,8 @@
+import React from 'react';
 
-import React from 'react'
+export interface SwitchProps {}
 
-export interface SwitchProps {
-
-}
-
-
-export const Switch: React.FC<SwitchProps> = (props) => {
-	// TODO
-	return <div>Switch</div>
-}
+export const Switch: React.FC<SwitchProps> = props => {
+  // TODO
+  return <div>Switch</div>;
+};

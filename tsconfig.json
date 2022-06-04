@@ -1,15 +1,15 @@
 {
-	"include": ["packages/*/src"],
-	"exclude": [
-		"node_modules",
+  "include": ["packages/*/src"],
+  "exclude": [
+    "node_modules",
     "packages/*/esm/**/*",
     "packages/*/lib/**/*",
     "packages/*/cjs/**/*",
-		"packages/style/src/color/plugins/*",
-		"scripts/**/*"
-	],
+    "packages/style/src/color/plugins/*",
+    "scripts/**/*"
+  ],
   "compilerOptions": {
-		"target": "ES2015",
+    "target": "ES2015",
     "lib": ["DOM", "ESNext"],
     "module": "ESNext",
     "moduleResolution": "Node",
@@ -21,6 +21,6 @@
     "baseUrl": ".",
     "paths": {
       "@study/*": ["packages/*/src"]
-    }                        
+    }
   }
 }

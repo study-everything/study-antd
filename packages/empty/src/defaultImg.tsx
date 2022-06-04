@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {getPrefixCls} from './utils';
+import { getPrefixCls } from './utils';
 const DefaultImage = () => {
   const prefixCls = getPrefixCls('empty-img-default');
   return (
