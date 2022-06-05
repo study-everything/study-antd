@@ -81,13 +81,9 @@ importers:
       '@babel/runtime-corejs3': 7.18.3
       chalk: 4.1.2
       child-process-promise: 2.2.1
-<<<<<<< HEAD
       rc-util: 5.21.5_react-dom@18.1.0+react@18.1.0
       stylelint-declaration-block-no-ignored-properties: 2.5.0_stylelint@14.8.5
-=======
       lodash: 4.17.21
-      rc-util: 5.21.4_react-dom@18.1.0+react@18.1.0
->>>>>>> e6ae4b6 (copy function)
     devDependencies:
       '@babel/core': 7.18.2
       '@babel/plugin-transform-runtime': 7.18.2_@babel+core@7.18.2
