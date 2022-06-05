@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { SpinFC } from './Spin';
+import { Spin } from './Spin';
 import './style';
 import './Spin.stories.less';
 
@@ -43,7 +43,7 @@ const primaryArgs = {
 
 export default {
   title: 'Spin',
-  component: SpinFC,
+  component: Spin,
   args: primaryArgs,
   argTypes: {
     ...primaryArgTypes,
@@ -62,69 +62,44 @@ export default {
         disable: true,
       },
     },
-    indicator: {
-      table: {
-        disable: true,
-      },
-    },
   },
 };
 
-// function getNewArgsMap(keyArr: string[]) {
-//   const result = {};
-//   Object.keys(primaryArgs)
-//     .filter(key => keyArr.includes(key))
-//     .forEach(key => {
-//       result[key] = primaryArgs[key];
-//     });
-//   return result;
-// }
-
-// function getNewArgTypesMap(keyArr: string[]) {
-//   const result = {};
-//   Object.keys(primaryArgTypes).forEach(key => {
-//     result[key] = Object.assign(primaryArgTypes[key], {
-//       table: {
-//         disable: !keyArr.includes(key),
-//       },
-//     });
-//   });
-//   return result;
-// }
-
 export const Basic = args => {
-  //   const  = someFunction(delay);
   useEffect(() => {});
   return (
     <div>
-      <div className="desc-block">
+      <div className="block">
         <h3>默认</h3>
-        <SpinFC {...args} />
+        <Spin {...args} />
       </div>
-      <div className="desc-block">
+      <div className="block">
         <h3>包裹容器</h3>
-        <SpinFC {...args}>
-          <div style={{ width: '100%', height: '100px', background: 'lavender' }}>hello</div>
-        </SpinFC>
+        <Spin {...args}>
+          <div className="container" />
+        </Spin>
       </div>
-      <div className="desc-block">
+      <div className="block">
         <h3>放入容器中</h3>
-        <div style={{ width: '100%', height: '100px', background: 'lavender' }}>
-          <SpinFC {...args} />
+        <div className="container">
+          <Spin {...args} />
         </div>
       </div>
     </div>
   );
 };
 
-// const BasicArgList = ['spinning', 'size', 'direction', 'tip'];
-// Basic.argTypes = getNewArgTypesMap(BasicArgList);
-// Basic.args = getNewArgsMap(BasicArgList);
+Basic.display = '基础属性';
 
-export const Indicator = () => (
+export const Indicator = args => (
   <>
-    <h3>indicator</h3>
-    <div className="my-spin" />
-    <SpinFC spinning indicator={<div className="my-spin" />} />
+    <div className="block">
+      <h3>自定义指示器</h3>
+      <div className="my-spin" />
+    </div>
+    <div className="block">
+      <h3>新的Spin</h3>
+      <Spin {...args} indicator={<div className="my-spin" />} />
+    </div>
   </>
 );

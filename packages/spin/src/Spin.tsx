@@ -67,7 +67,7 @@ function shouldDelay(spinning?: boolean, delay?: number) {
   return !!spinning && !!delay && !isNaN(Number(delay));
 }
 
-class Spin extends React.Component<SpinProps, SpinState> {
+class SpinCC extends React.Component<SpinProps, SpinState> {
   originalUpdateSpinning: () => void;
 
   static setDefaultIndicator = (indicator: React.ReactNode) => {
@@ -187,17 +187,11 @@ class Spin extends React.Component<SpinProps, SpinState> {
   }
 }
 
-export const SpinFC: SpinFCType = (props: SpinProps) => <Spin {...props} />;
+export const Spin: SpinFCType = (props: SpinProps) => <SpinCC {...props} />;
 
-SpinFC.setDefaultIndicator = (indicator: React.ReactNode) => {
+Spin.setDefaultIndicator = (indicator: React.ReactNode) => {
   defaultIndicator = indicator;
 };
-
-if (process.env.NODE_ENV !== 'production') {
-  SpinFC.displayName = 'Spin';
-}
-
-// export default SpinFC;
 
 export type SpinFCType = React.FC<SpinProps> & {
   setDefaultIndicator: (indicator: React.ReactNode) => void;

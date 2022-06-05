@@ -26,7 +26,6 @@
     "outDir": "lib",
     "declaration": true,
     "declarationMap": false,
-		"paths": {},
-    "ignoreTypeValueShadow": true 
+		"paths": {}
   }
 }
