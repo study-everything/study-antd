@@ -1,4 +1,4 @@
-const {src, dest, task, parallel} = require("gulp");
+const {src, dest, parallel} = require("gulp");
 const gulpLess = require('gulp-less')
 const replace = require('gulp-replace')
 const gulpTs = require('gulp-typescript')

@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import debounce from 'lodash/debounce';
 import omit from 'rc-util/lib/omit';
-import { tuple, isValidElement, cloneElement } from './utils';
+import { tuple, isValidElement, cloneElement } from '../utils';
 
 const SpinSizes = tuple('small', 'default', 'large');
 export type SpinSize = typeof SpinSizes[number];

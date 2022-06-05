@@ -27,5 +27,6 @@
     "declaration": true,
     "declarationMap": false,
 		"paths": {},
+    "ignoreTypeValueShadow": true 
   }
 }

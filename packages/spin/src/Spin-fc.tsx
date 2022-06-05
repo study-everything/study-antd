@@ -1,27 +1,24 @@
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
-import debounce from 'lodash/debounce';
-import omit from 'rc-util/lib/omit';
-import React from 'react';
-import { cloneElement, isValidElement, tuple } from './utils';
+// import debounce from 'lodash/debounce';
+// import omit from 'rc-util/lib/omit';
+import { tuple, isValidElement, cloneElement } from './utils';
 
 const SpinPrefixCls = 'ant-spin';
 const SpinSizes = tuple('small', 'default', 'large');
 export type SpinSize = typeof SpinSizes[number];
 export type SpinIndicator = React.ReactElement<HTMLElement>;
 export type DirectionType = 'ltr' | 'rtl' | undefined;
-export interface SpinState {
-  spinning?: boolean;
-  notCssAnimationSupported?: boolean;
-}
+
 export interface SpinProps {
   //   prefixCls?: string;
-  wrapperClassName?: string; // 包装器的类属性
-  style?: React.CSSProperties;
   className?: string;
   spinning?: boolean; // 是否为加载中状态
+  style?: React.CSSProperties;
   size?: SpinSize; // 组建大小'small', 'default', 'large'
   tip?: React.ReactNode; // 当作为包裹元素时，可以自定义描述文案
   delay?: number; // 延迟显示加载效果的时间（防止闪烁）
+  wrapperClassName?: string; // 包装器的类属性
   indicator?: SpinIndicator; // 加载指示符
   children?: React.ReactNode;
   direction?: DirectionType;
@@ -67,78 +64,45 @@ function shouldDelay(spinning?: boolean, delay?: number) {
   return !!spinning && !!delay && !isNaN(Number(delay));
 }
 
-class Spin extends React.Component<SpinProps, SpinState> {
-  originalUpdateSpinning: () => void;
+export const Spin: SpinFCType = (props: SpinProps) => {
+  const {
+    size,
+    tip,
+    className,
+    wrapperClassName,
+    style,
+    direction,
+    spinning,
+    delay,
+    ...restProps
+  } = props;
 
-  static setDefaultIndicator = (indicator: React.ReactNode) => {
-    defaultIndicator = indicator;
-  };
+  const shouldBeDelayed = shouldDelay(spinning, delay);
+  const [currentSpinning, updateCurrentSpinning] = useState(spinning && !shouldBeDelayed);
 
-  constructor(props: SpinProps) {
-    super(props);
-
-    const { spinning, delay } = props;
-    const shouldBeDelayed = shouldDelay(spinning, delay);
-    this.state = {
-      spinning: spinning && !shouldBeDelayed,
-    };
-    this.originalUpdateSpinning = this.updateSpinning;
-    this.debouncifyUpdateSpinning(props);
-  }
-
-  componentDidMount() {
-    this.updateSpinning();
-  }
-
-  componentDidUpdate() {
-    this.debouncifyUpdateSpinning();
-    this.updateSpinning();
-  }
-
-  componentWillUnmount() {
-    this.cancelExistingSpin();
-  }
-
-  debouncifyUpdateSpinning = (props?: SpinProps) => {
-    const { delay } = props || this.props;
-    if (delay) {
-      this.cancelExistingSpin();
-      this.updateSpinning = debounce(this.originalUpdateSpinning, delay);
+  const updateSpinning = () => {
+    if (spinning !== currentSpinning) {
+      updateCurrentSpinning(spinning);
     }
   };
 
-  updateSpinning = () => {
-    const { spinning } = this.props;
-    const { spinning: currentSpinning } = this.state;
-    if (currentSpinning !== spinning) {
-      this.setState({ spinning });
-    }
-  };
+  // componentDidMount
+  useEffect(() => {
+    updateSpinning();
 
-  cancelExistingSpin() {
-    const { updateSpinning } = this;
-    if (updateSpinning && (updateSpinning as any).cancel) {
-      (updateSpinning as any).cancel();
-    }
-  }
+    // componentWillUnmount
+    return () => {};
+  }, []);
 
-  isNestedPattern() {
-    return !!(this.props && typeof this.props.children !== 'undefined');
-  }
+  // componentDidUpdate
+  useEffect(() => {
+    updateSpinning();
+  });
 
-  renderSpin = (prefixCls: string) => {
-    const {
-      //   spinPrefixCls: prefixCls,
-      className,
-      size,
-      tip,
-      wrapperClassName,
-      style,
-      direction,
-      ...restProps
-    } = this.props;
-    const { spinning } = this.state;
+  const isNestedPattern = () => !!(props && typeof props.children !== 'undefined');
 
+  const renderSpin = (prefixCls: string) => {
+    // 根据属性给spin加上类
     const spinClassName = classNames(
       prefixCls,
       {
@@ -151,53 +115,45 @@ class Spin extends React.Component<SpinProps, SpinState> {
       className,
     );
 
-    // fix https://fb.me/react-unknown-prop
-    const divProps = omit(restProps, ['spinning', 'delay', 'indicator']);
-
     const spinElement = (
       <div
-        {...divProps}
+        {...restProps}
         style={style}
         className={spinClassName}
         aria-live="polite"
         aria-busy={spinning}
       >
-        {renderIndicator(prefixCls, this.props)}
+        {renderIndicator(prefixCls, props)}
         {tip ? <div className={`${prefixCls}-text`}>{tip}</div> : null}
       </div>
     );
-    if (this.isNestedPattern()) {
+
+    // 如果是包裹模式，则返回这个
+    if (isNestedPattern()) {
       const containerClassName = classNames(`${prefixCls}-container`, {
         [`${prefixCls}-blur`]: spinning,
       });
       return (
-        <div {...divProps} className={classNames(`${prefixCls}-nested-loading`, wrapperClassName)}>
+        <div {...restProps} className={classNames(`${prefixCls}-nested-loading`, wrapperClassName)}>
           {spinning && <div key="loading">{spinElement}</div>}
           <div className={containerClassName} key="container">
-            {this.props.children}
+            {props.children}
           </div>
         </div>
       );
     }
+
+    // 否则返回这个
     return spinElement;
   };
 
-  render() {
-    return this.renderSpin(SpinPrefixCls);
-  }
-}
-
-export const SpinFC: SpinFCType = (props: SpinProps) => <Spin {...props} />;
-
-SpinFC.setDefaultIndicator = (indicator: React.ReactNode) => {
-  defaultIndicator = indicator;
+  return renderSpin(SpinPrefixCls);
 };
 
-if (process.env.NODE_ENV !== 'production') {
-  SpinFC.displayName = 'Spin';
-}
-
-// export default SpinFC;
+// 可以全局设置默认的指示器
+Spin.setDefaultIndicator = (indicator: React.ReactNode) => {
+  defaultIndicator = indicator;
+};
 
 export type SpinFCType = React.FC<SpinProps> & {
   setDefaultIndicator: (indicator: React.ReactNode) => void;
