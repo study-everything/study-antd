@@ -2,11 +2,15 @@ import React, { useMemo } from 'react';
 import classNames from 'classnames';
 import TableContext from './context/TableContext';
 import BodyContext from './context/BodyContext';
+import Body from './Body';
 import ResizeContext from './context/ResizeContext';
 import { getPathValue, mergeObject } from './utils/valueUtil';
 import Header from './Header/Header';
 import type { GetComponent, TableComponents, DefaultRecordType } from './interface';
 import useColumns from './hooks/useColumns';
+
+// Used for conditions cache
+const EMPTY_DATA = [];
 
 export interface TableProps<RecordType = unknown> {
   prefixCls?: string;
@@ -20,15 +24,24 @@ const MemoTableContext = React.memo(({ children }) => children);
 function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordType>) {
   const {
     prefixCls,
+    className,
+    rowClassName,
+    style,
     data,
+    rowKey,
+    scroll,
     tableLayout,
+    direction,
 
-    // Customize 定制
+    // Customize
     showHeader,
     components,
   } = props;
 
-  //  ==================== Customize 定制 =====================
+  const mergedData = data || EMPTY_DATA;
+  const hasData = !!mergedData.length;
+
+  //  ==================== Customize =====================
   const mergedComponents = React.useMemo(
     () => mergeObject<TableComponents<RecordType>>(components, {}),
     [components],
@@ -38,6 +51,16 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     (path, defaultComponent) => getPathValue(mergedComponents, path) || defaultComponent,
     [mergedComponents],
   );
+
+  const getRowKey = useMemo(() => {
+    if (typeof rowKey === 'function') {
+      return rowKey;
+    }
+    return record => {
+      const key = record && record[rowKey];
+      return key;
+    };
+  }, [rowKey]);
 
   // ====================== Render ======================
   const TableComponent = getComponent(['table'], 'table');
@@ -60,10 +83,16 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     // scroll,
   };
 
+  // Empty
+  const emptyNode = null;
+  // Body
+  const bodyTable = <Body data={mergedData} getRowKey={getRowKey} />;
+
   // ====================== Column ======================
   const [columns, flattenColumns] = useColumns(
     {
       ...props,
+      // ...expandableConfig,
     },
     null,
   );
@@ -80,6 +109,7 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     <div className={classNames(`${prefixCls}-content`)}>
       <TableComponent style={{ tableLayout: mergedTableLayout }}>
         {showHeader !== false && <Header {...headerProps} {...columnContext} />}
+        {bodyTable}
       </TableComponent>
     </div>
   );
@@ -100,12 +130,14 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   );
   const BodyContextValue = useMemo(
     () => ({
+      ...columnContext,
       tableLayout: mergedTableLayout,
     }),
-    [mergedTableLayout],
+    [mergedTableLayout, columnContext],
   );
   const ResizeContextValue = {};
   console.log(1, 'TableContext', TableContextValue);
+  console.log(2, 'BodyContextValue', BodyContextValue);
   return (
     <TableContext.Provider value={TableContextValue}>
       <BodyContext.Provider value={BodyContextValue}>

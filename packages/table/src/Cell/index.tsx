@@ -1,21 +1,44 @@
 import classNames from 'classnames';
 import * as React from 'react';
-import { validateValue } from '../utils/valueUtil';
+import { getPathValue, validateValue } from '../utils/valueUtil';
 
-function Cell({ prefixCls, className, children, component: Component = 'td' }, ref) {
+function Cell(
+  {
+    prefixCls,
+    className,
+    record,
+    index,
+    renderIndex,
+    dataIndex,
+    children,
+    component: Component = 'td',
+  },
+  ref,
+) {
   const cellPrefixCls = `${prefixCls}-cell`;
+
   // ==================== Child Node ====================
   const [childNode, legacyCellProps] = React.useMemo(() => {
     if (validateValue(children)) {
       return [children];
     }
     // Customize render node
-    // let returnChildNode = value;
-    // let returnCellProps: CellType<RecordType> | undefined = undefined;
-    // return [returnChildNode, returnCellProps];
+    const value = getPathValue(record, dataIndex);
+    const returnChildNode = value;
+    let returnCellProps;
+    return [returnChildNode, returnCellProps];
   }, []);
 
   let mergedChildNode = childNode;
+
+  // 防止 mergedChildNode 不是正确的值
+  if (
+    typeof mergedChildNode === 'object' &&
+    !Array.isArray(mergedChildNode) &&
+    !React.isValidElement(mergedChildNode)
+  ) {
+    mergedChildNode = null;
+  }
 
   const { className: cellClassName } = legacyCellProps || {};
   // ====================== Fixed =======================
