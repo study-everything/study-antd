@@ -40,6 +40,7 @@ function BodyRow(props) {
             index={index}
             renderIndex={renderIndex}
             dataIndex={dataIndex}
+            render={render}
             component={cellComponent}
           />
         );

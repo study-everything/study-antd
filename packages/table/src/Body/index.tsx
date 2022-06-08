@@ -7,6 +7,7 @@ import BodyRow from './BodyRow';
 function Body({ data, emptyNode, childrenColumnName, getRowKey }) {
   const { prefixCls, getComponent } = React.useContext(TableContext);
   const { flattenColumns } = React.useContext(BodyContext);
+  // console.log('flattenColumns', flattenColumns);
 
   const flattenData = useFlattenRecords(data, childrenColumnName);
 
@@ -17,7 +18,9 @@ function Body({ data, emptyNode, childrenColumnName, getRowKey }) {
     const tdComponent = getComponent(['body', 'cell'], 'td');
 
     let rows: React.ReactNode;
+    console.log(data)
     if (data.length) {
+      // console.log('flattenData', flattenData);
       rows = flattenData.map((item, idx) => {
         const { record, indent, index: renderIndex } = item;
 
@@ -45,4 +48,5 @@ function Body({ data, emptyNode, childrenColumnName, getRowKey }) {
 
   return bodyNode;
 }
+
 export default Body;

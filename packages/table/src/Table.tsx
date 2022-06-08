@@ -19,7 +19,7 @@ export interface TableProps<RecordType = unknown> {
   data: readonly RecordType[];
 }
 
-const MemoTableContext = React.memo(({ children }) => children);
+const MemoTableContent = React.memo(({ children }) => children);
 
 function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordType>) {
   const {
@@ -37,7 +37,7 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     showHeader,
     components,
   } = props;
-
+  console.log('data', data);
   const mergedData = data || EMPTY_DATA;
   const hasData = !!mergedData.length;
 
@@ -61,6 +61,22 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
       return key;
     };
   }, [rowKey]);
+
+  // ====================== Column ======================
+  const [columns, flattenColumns] = useColumns(
+    {
+      ...props,
+      // ...expandableConfig,
+    },
+    null,
+  );
+  const columnContext = React.useMemo(
+    () => ({
+      columns,
+      flattenColumns,
+    }),
+    [columns, flattenColumns],
+  );
 
   // ====================== Render ======================
   const TableComponent = getComponent(['table'], 'table');
@@ -86,23 +102,7 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   // Empty
   const emptyNode = null;
   // Body
-  const bodyTable = <Body data={mergedData} getRowKey={getRowKey} />;
-
-  // ====================== Column ======================
-  const [columns, flattenColumns] = useColumns(
-    {
-      ...props,
-      // ...expandableConfig,
-    },
-    null,
-  );
-  const columnContext = React.useMemo(
-    () => ({
-      columns,
-      flattenColumns,
-    }),
-    [columns, flattenColumns],
-  );
+  const bodyTable = <Body data={mergedData} getRowKey={getRowKey} emptyNode={emptyNode} />;
 
   let groupTableNode: React.ReactNode;
   groupTableNode = (
@@ -116,11 +116,12 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
 
   let fullTable = (
     <div className={classNames(prefixCls)}>
-      <MemoTableContext>
+      <MemoTableContent>
         <div className={`${prefixCls}-container`}>{groupTableNode}</div>
-      </MemoTableContext>
+      </MemoTableContent>
     </div>
   );
+
   const TableContextValue = useMemo(
     () => ({
       prefixCls,
@@ -128,6 +129,7 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     }),
     [prefixCls],
   );
+
   const BodyContextValue = useMemo(
     () => ({
       ...columnContext,
@@ -135,9 +137,10 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     }),
     [mergedTableLayout, columnContext],
   );
+
   const ResizeContextValue = {};
-  console.log(1, 'TableContext', TableContextValue);
-  console.log(2, 'BodyContextValue', BodyContextValue);
+  // console.log(1, 'TableContext', TableContextValue);
+  // console.log(2, 'BodyContextValue', BodyContextValue);
   return (
     <TableContext.Provider value={TableContextValue}>
       <BodyContext.Provider value={BodyContextValue}>
