@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import { SearchOutlined, DownloadOutlined, PoweroffOutlined } from '@ant-design/icons';
 import { Radio } from 'antd';
-import Button, { SizeType } from './button';
+import type { SizeType } from './button';
+import Button from './button';
 import './style';
 import './Button.stories.less';
-import { ButtonGroupProps } from './button-group';
+import type { ButtonGroupProps } from './button-group';
 
 storiesOf('Button', module)
   .add('basic', () => (
@@ -114,8 +115,7 @@ storiesOf('Button', module)
       </Button>
     </div>
   ))
-  .add('icon', () => {
-    return (
+  .add('icon', () => (
       <>
         <Button type="primary" shape="circle" icon={<SearchOutlined />} />
         <Button type="primary" shape="circle">
@@ -159,8 +159,7 @@ storiesOf('Button', module)
         </Button>
         <Button icon={<SearchOutlined />} size="large" href="https://www.google.com" />
       </>
-    );
-  })
+    ))
   .add('group', () => {
     const getGroup = (props?: ButtonGroupProps) => (
       <div>
