@@ -1,3 +1,5 @@
+const INTERNAL_KEY_PREFIX = 'RC_TABLE_KEY';
+
 function toArray<T>(arr: T | readonly T[]): T[] {
   if (arr === undefined || arr === null) {
     return [];
@@ -21,6 +23,24 @@ export function getPathValue(record, path) {
   }
   return current;
 }
+
+export function getColumnsKey(columns) {
+  const columnKeys = [];
+  const keys = {};
+
+  columns.forEach(column => {
+    const { key, dataIndex } = column || {};
+    let mergedKey = key || toArray(dataIndex).join('-') || INTERNAL_KEY_PREFIX;
+    while (keys[mergedKey]) {
+      mergedKey = `${mergedKey}_next`;
+    }
+    keys[mergedKey] = true;
+
+    columnKeys.push(mergedKey);
+  });
+  return columnKeys;
+}
+
 export function mergeObject<ReturnObject extends object>(
   ...objects: Partial<ReturnObject>[]
 ): ReturnObject {

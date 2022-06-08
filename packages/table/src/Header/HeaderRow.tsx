@@ -12,7 +12,6 @@ function HeaderRow({
   index,
 }) {
   const { prefixCls } = React.useContext(TableContext);
-  console.log('CellComponent', CellComponent);
   return (
     <RowComponent>
       {cells.map((cell, cellIndex) => {

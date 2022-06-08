@@ -1,21 +1,62 @@
 import classNames from 'classnames';
 import * as React from 'react';
-import { validateValue } from '../utils/valueUtil';
+import { getPathValue, validateValue } from '../utils/valueUtil';
 
-function Cell({ prefixCls, className, children, component: Component = 'td' }, ref) {
+function isRenderCell(data) {
+  return data && typeof data === 'object' && !Array.isArray(data) && !React.isValidElement(data);
+}
+
+function Cell(
+  {
+    prefixCls,
+    className,
+    record,
+    index,
+    renderIndex,
+    dataIndex,
+    render,
+    children,
+    component: Component = 'td',
+  },
+  ref,
+) {
   const cellPrefixCls = `${prefixCls}-cell`;
+
   // ==================== Child Node ====================
   const [childNode, legacyCellProps] = React.useMemo(() => {
     if (validateValue(children)) {
       return [children];
     }
     // Customize render node
-    // let returnChildNode = value;
-    // let returnCellProps: CellType<RecordType> | undefined = undefined;
-    // return [returnChildNode, returnCellProps];
+    const value = getPathValue(record, dataIndex);
+    let returnChildNode = value;
+    let returnCellProps;
+
+    if (render) {
+      const renderData = render(value, record, renderIndex);
+      // 判断返回的是否为react元素
+      if (isRenderCell(renderData)) {
+        // 发出警告
+        returnChildNode = renderData.children;
+        returnCellProps = renderData.props;
+      } else {
+        returnChildNode = renderData;
+      }
+    }
+
+    return [returnChildNode, returnCellProps];
   }, []);
 
   let mergedChildNode = childNode;
+
+  // 防止 mergedChildNode 不是正确的值
+  if (
+    typeof mergedChildNode === 'object' &&
+    !Array.isArray(mergedChildNode) &&
+    !React.isValidElement(mergedChildNode)
+  ) {
+    mergedChildNode = null;
+  }
 
   const { className: cellClassName } = legacyCellProps || {};
   // ====================== Fixed =======================

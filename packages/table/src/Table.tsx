@@ -2,11 +2,15 @@ import React, { useMemo } from 'react';
 import classNames from 'classnames';
 import TableContext from './context/TableContext';
 import BodyContext from './context/BodyContext';
+import Body from './Body';
 import ResizeContext from './context/ResizeContext';
 import { getPathValue, mergeObject } from './utils/valueUtil';
 import Header from './Header/Header';
 import type { GetComponent, TableComponents, DefaultRecordType } from './interface';
 import useColumns from './hooks/useColumns';
+
+// Used for conditions cache
+const EMPTY_DATA = [];
 
 export interface TableProps<RecordType = unknown> {
   prefixCls?: string;
@@ -15,20 +19,29 @@ export interface TableProps<RecordType = unknown> {
   data: readonly RecordType[];
 }
 
-const MemoTableContext = React.memo(({ children }) => children);
+const MemoTableContent = React.memo(({ children }) => children);
 
 function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordType>) {
   const {
     prefixCls,
+    className,
+    rowClassName,
+    style,
     data,
+    rowKey,
+    scroll,
     tableLayout,
+    direction,
 
-    // Customize 定制
+    // Customize
     showHeader,
     components,
   } = props;
+  console.log('data', data);
+  const mergedData = data || EMPTY_DATA;
+  const hasData = !!mergedData.length;
 
-  //  ==================== Customize 定制 =====================
+  //  ==================== Customize =====================
   const mergedComponents = React.useMemo(
     () => mergeObject<TableComponents<RecordType>>(components, {}),
     [components],
@@ -37,6 +50,32 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   const getComponent = React.useCallback<GetComponent>(
     (path, defaultComponent) => getPathValue(mergedComponents, path) || defaultComponent,
     [mergedComponents],
+  );
+
+  const getRowKey = useMemo(() => {
+    if (typeof rowKey === 'function') {
+      return rowKey;
+    }
+    return record => {
+      const key = record && record[rowKey];
+      return key;
+    };
+  }, [rowKey]);
+
+  // ====================== Column ======================
+  const [columns, flattenColumns] = useColumns(
+    {
+      ...props,
+      // ...expandableConfig,
+    },
+    null,
+  );
+  const columnContext = React.useMemo(
+    () => ({
+      columns,
+      flattenColumns,
+    }),
+    [columns, flattenColumns],
   );
 
   // ====================== Render ======================
@@ -60,37 +99,29 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     // scroll,
   };
 
-  // ====================== Column ======================
-  const [columns, flattenColumns] = useColumns(
-    {
-      ...props,
-    },
-    null,
-  );
-  const columnContext = React.useMemo(
-    () => ({
-      columns,
-      flattenColumns,
-    }),
-    [columns, flattenColumns],
-  );
+  // Empty
+  const emptyNode = null;
+  // Body
+  const bodyTable = <Body data={mergedData} getRowKey={getRowKey} emptyNode={emptyNode} />;
 
   let groupTableNode: React.ReactNode;
   groupTableNode = (
     <div className={classNames(`${prefixCls}-content`)}>
       <TableComponent style={{ tableLayout: mergedTableLayout }}>
         {showHeader !== false && <Header {...headerProps} {...columnContext} />}
+        {bodyTable}
       </TableComponent>
     </div>
   );
 
   let fullTable = (
     <div className={classNames(prefixCls)}>
-      <MemoTableContext>
+      <MemoTableContent>
         <div className={`${prefixCls}-container`}>{groupTableNode}</div>
-      </MemoTableContext>
+      </MemoTableContent>
     </div>
   );
+
   const TableContextValue = useMemo(
     () => ({
       prefixCls,
@@ -98,14 +129,18 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     }),
     [prefixCls],
   );
+
   const BodyContextValue = useMemo(
     () => ({
+      ...columnContext,
       tableLayout: mergedTableLayout,
     }),
-    [mergedTableLayout],
+    [mergedTableLayout, columnContext],
   );
+
   const ResizeContextValue = {};
-  console.log(1, 'TableContext', TableContextValue);
+  // console.log(1, 'TableContext', TableContextValue);
+  // console.log(2, 'BodyContextValue', BodyContextValue);
   return (
     <TableContext.Provider value={TableContextValue}>
       <BodyContext.Provider value={BodyContextValue}>

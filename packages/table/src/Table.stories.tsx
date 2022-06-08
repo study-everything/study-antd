@@ -57,6 +57,7 @@ storiesOf('Table', module).add('Demo', () => {
   };
 
   const onAdd = () => {
+    console.log(data); // 每次都是添加后后的值
     setData([
       ...data,
       {
@@ -71,7 +72,12 @@ storiesOf('Table', module).add('Demo', () => {
   const columns = [
     { title: 'title1', dataIndex: 'a', key: 'a', width: 100 },
     { id: '123', title: 'title2', dataIndex: 'b', key: 'b', width: 100 },
-    { title: 'title3', dataIndex: 'c', key: 'c', width: 200 },
+    {
+      title: 'title3',
+      dataIndex: 'c',
+      key: 'c',
+      width: 200,
+    },
     {
       title: 'Operations',
       dataIndex: '',
