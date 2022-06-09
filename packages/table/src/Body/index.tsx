@@ -18,7 +18,6 @@ function Body({ data, emptyNode, childrenColumnName, getRowKey }) {
     const tdComponent = getComponent(['body', 'cell'], 'td');
 
     let rows: React.ReactNode;
-    console.log(data)
     if (data.length) {
       // console.log('flattenData', flattenData);
       rows = flattenData.map((item, idx) => {
@@ -42,7 +41,6 @@ function Body({ data, emptyNode, childrenColumnName, getRowKey }) {
     } else {
       rows = emptyNode;
     }
-
     return <WrapperComponent className={`${prefixCls}-tbody`}>{rows}</WrapperComponent>;
   }, [data, prefixCls]);
 

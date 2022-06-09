@@ -25,22 +25,7 @@ function revertForRtl(columns) {
 }
 
 function useColumns(
-  {
-    prefixCls,
-    columns,
-    children,
-    expandable,
-    expandedKeys,
-    getRowKey,
-    onTriggerExpand,
-    expandIcon,
-    rowExpandable,
-    expandIconColumnIndex,
-    direction,
-    expandRowByClick,
-    columnWidth,
-    fixed,
-  },
+  { columns, children, expandable, expandedKeys, getRowKey, expandIcon, direction },
   transformColumns,
 ) {
   const baseColumns = React.useMemo(() => columns, [columns, children]);
@@ -68,7 +53,7 @@ function useColumns(
       ];
     }
     return finalColumns;
-  }, [transformColumns, direction]);
+  }, [transformColumns, withExpandColumns, direction]);
 
   // ========================== Flatten =========================
   const flattenColumns = React.useMemo(() => {

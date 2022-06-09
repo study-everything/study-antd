@@ -45,7 +45,7 @@ function Cell(
     }
 
     return [returnChildNode, returnCellProps];
-  }, []);
+  }, [render]);
 
   let mergedChildNode = childNode;
 

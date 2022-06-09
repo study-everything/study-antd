@@ -57,7 +57,6 @@ storiesOf('Table', module).add('Demo', () => {
   };
 
   const onAdd = () => {
-    console.log(data); // 每次都是添加后后的值
     setData([
       ...data,
       {
@@ -99,9 +98,9 @@ storiesOf('Table', module).add('Demo', () => {
       <Table
         columns={columns}
         data={data}
-        // components={{
-        //   body: { wrapper: MotionBody },
-        // }}
+        components={{
+          body: { wrapper: MotionBody },
+        }}
       />
     </div>
   );

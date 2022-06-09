@@ -37,7 +37,6 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     showHeader,
     components,
   } = props;
-  console.log('data', data);
   const mergedData = data || EMPTY_DATA;
   const hasData = !!mergedData.length;
 

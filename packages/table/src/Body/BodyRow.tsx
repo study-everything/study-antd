@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import * as React from 'react';
 import Cell from '../Cell';
 import BodyContext from '../context/BodyContext';
@@ -26,7 +27,9 @@ function BodyRow(props) {
   const columnsKey = getColumnsKey(flattenColumns); // ['a','b','c','d']
 
   const baseRowNode = (
-    <RowComponent>
+    <RowComponent
+      className={classNames(className, `${prefixCls}-row`, `${prefixCls}-row-level-${indent}`)}
+    >
       {flattenColumns.map((column, colIndex) => {
         const { render, dataIndex, className: columnClassName } = column;
         const key = columnsKey[colIndex];
