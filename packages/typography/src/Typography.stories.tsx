@@ -1,7 +1,7 @@
 import type {ComponentMeta, ComponentStory} from '@storybook/react';
-import {Space, Divider, Radio} from "antd";
-import React, { useState } from 'react';
-import { CheckOutlined, HighlightOutlined, SmileFilled, SmileOutlined } from '@ant-design/icons';
+import {Space, Divider, Radio, Switch, Slider} from "antd";
+import React, {useState} from 'react';
+import {CheckOutlined, HighlightOutlined, SmileFilled, SmileOutlined} from '@ant-design/icons';
 import Title from './Title';
 import Paragraph from './Paragraph';
 import Typography from './index';
@@ -93,10 +93,10 @@ const ParagraphTemplate = () => {
 
   return (
     <>
-      <Paragraph editable={{ onChange: setEditableStr }}>{editableStr}</Paragraph>
+      <Paragraph editable={{onChange: setEditableStr}}>{editableStr}</Paragraph>
       <Paragraph
         editable={{
-          icon: <HighlightOutlined />,
+          icon: <HighlightOutlined/>,
           tooltip: 'click to edit text',
           onChange: setCustomIconStr,
         }}
@@ -123,17 +123,17 @@ const ParagraphTemplate = () => {
       </Paragraph>
       <Paragraph
         editable={{
-          icon: <HighlightOutlined />,
+          icon: <HighlightOutlined/>,
           tooltip: 'click to edit text',
           onChange: setCustomEnterIconStr,
-          enterIcon: <CheckOutlined />,
+          enterIcon: <CheckOutlined/>,
         }}
       >
         {customEnterIconStr}
       </Paragraph>
       <Paragraph
         editable={{
-          icon: <HighlightOutlined />,
+          icon: <HighlightOutlined/>,
           tooltip: 'click to edit text',
           onChange: setNoEnterIconStr,
           enterIcon: null,
@@ -141,48 +141,147 @@ const ParagraphTemplate = () => {
       >
         {noEnterIconStr}
       </Paragraph>
-      <Paragraph editable={{ tooltip: false, onChange: setHideTooltipStr }}>
+      <Paragraph editable={{tooltip: false, onChange: setHideTooltipStr}}>
         {hideTooltipStr}
       </Paragraph>
       <Paragraph
         editable={{
           onChange: setLengthLimitedStr,
           maxLength: 50,
-          autoSize: { maxRows: 5, minRows: 3 },
+          autoSize: {maxRows: 5, minRows: 3},
         }}
       >
         {lengthLimitedStr}
       </Paragraph>
-      <Typography.Title editable level={1} style={{ margin: 0 }}>
+      <Typography.Title editable level={1} style={{margin: 0}}>
         h1. Ant Design
       </Typography.Title>
-      <Typography.Title editable level={2} style={{ margin: 0 }}>
+      <Typography.Title editable level={2} style={{margin: 0}}>
         h2. Ant Design
       </Typography.Title>
-      <Typography.Title editable level={3} style={{ margin: 0 }}>
+      <Typography.Title editable level={3} style={{margin: 0}}>
         h3. Ant Design
       </Typography.Title>
-      <Typography.Title editable level={4} style={{ margin: 0 }}>
+      <Typography.Title editable level={4} style={{margin: 0}}>
         h4. Ant Design
       </Typography.Title>
-      <Typography.Title editable level={5} style={{ margin: 0 }}>
+      <Typography.Title editable level={5} style={{margin: 0}}>
         h5. Ant Design
       </Typography.Title>
-      <Divider />
+      <Divider/>
       <Paragraph copyable>This is a copyable text.</Paragraph>
-      <Paragraph copyable={{ text: 'Hello, Ant Design!' }}>Replace copy text.</Paragraph>
+      <Paragraph copyable={{text: 'Hello, Ant Design!'}}>Replace copy text.</Paragraph>
       <Paragraph
         copyable={{
-          icon: [<SmileOutlined key="copy-icon" />, <SmileFilled key="copied-icon" />],
+          icon: [<SmileOutlined key="copy-icon"/>, <SmileFilled key="copied-icon"/>],
           tooltips: ['click here', 'you clicked!!'],
         }}
       >
         Custom Copy icon and replace tooltips text.
       </Paragraph>
-      <Paragraph copyable={{ tooltips: false }}>Hide Copy tooltips.</Paragraph>
+      <Paragraph copyable={{tooltips: false}}>Hide Copy tooltips.</Paragraph>
     </>
   );
 }
 export const ParagraphDemo: ComponentStory<typeof Paragraph> = ParagraphTemplate.bind({});
 ParagraphDemo.storyName = '可交互'
 ParagraphDemo.args = {}
+
+const Paragraph2Template = () => {
+  const [ellipsis, setEllipsis] = useState(true);
+
+  return (
+    <>
+      <Switch
+        checked={ellipsis}
+        onChange={() => {
+          setEllipsis(!ellipsis);
+        }}
+      />
+
+      <Paragraph ellipsis={ellipsis}>
+        Ant Design, a design language for background applications, is refined by Ant UED Team. Ant
+        Design, a design language for background applications, is refined by Ant UED Team. Ant
+        Design, a design language for background applications, is refined by Ant UED Team. Ant
+        Design, a design language for background applications, is refined by Ant UED Team. Ant
+        Design, a design language for background applications, is refined by Ant UED Team. Ant
+        Design, a design language for background applications, is refined by Ant UED Team.
+      </Paragraph>
+
+      <Paragraph ellipsis={ellipsis ? {rows: 2, expandable: true, symbol: 'more'} : false}>
+        Ant Design, a design language for background applications, is refined by Ant UED Team. Ant
+        Design, a design language for background applications, is refined by Ant UED Team. Ant
+        Design, a design language for background applications, is refined by Ant UED Team. Ant
+        Design, a design language for background applications, is refined by Ant UED Team. Ant
+        Design, a design language for background applications, is refined by Ant UED Team. Ant
+        Design, a design language for background applications, is refined by Ant UED Team.
+      </Paragraph>
+
+      <Text
+        style={ellipsis ? {width: 100} : undefined}
+        ellipsis={ellipsis ? {tooltip: 'I am ellipsis now!'} : false}
+      >
+        Ant Design, a design language for background applications, is refined by Ant UED Team.
+      </Text>
+    </>
+  );
+}
+export const Paragraph2Demo: ComponentStory<typeof Paragraph> = Paragraph2Template.bind({});
+Paragraph2Demo.storyName = '省略号'
+Paragraph2Demo.args = {}
+
+const EllipsisMiddleTemplate = () => {
+  const EllipsisMiddle:
+    // eslint-disable-next-line react/no-unstable-nested-components
+    React.FC<{ suffixCount: number; children: string }> = ({
+                                                             suffixCount,
+                                                             children,
+                                                           }) => {
+    const start = children.slice(0, children.length - suffixCount).trim();
+    const suffix = children.slice(-suffixCount).trim();
+    return (
+      <Text style={{maxWidth: '100%'}} ellipsis={{suffix}}>
+        {start}
+      </Text>
+    );
+  };
+
+  return (<EllipsisMiddle suffixCount={12}>
+    In the process of internal desktop applications development, many different design specs and
+    implementations would be involved, which might cause designers and developers difficulties and
+    duplication and reduce the efficiency of development.
+  </EllipsisMiddle>)
+}
+export const EllipsisMiddleDemo: ComponentStory<typeof Paragraph> = EllipsisMiddleTemplate.bind({});
+EllipsisMiddleDemo.storyName = '省略中间'
+EllipsisMiddleDemo.args = {}
+
+const SuffixEllipsisTemplate = () => {
+  const [rows, setRows] = useState(1);
+
+  const article =
+    "To be, or not to be, that is a question: Whether it is nobler in the mind to suffer. The slings and arrows of outrageous fortune Or to take arms against a sea of troubles, And by opposing end them? To die: to sleep; No more; and by a sleep to say we end The heart-ache and the thousand natural shocks That flesh is heir to, 'tis a consummation Devoutly to be wish'd. To die, to sleep To sleep- perchance to dream: ay, there's the rub! For in that sleep of death what dreams may come When we have shuffled off this mortal coil, Must give us pause. There 's the respect That makes calamity of so long life";
+
+  return (
+    <>
+      <Slider value={rows} min={1} max={10} onChange={setRows}/>
+      <Paragraph
+        ellipsis={{
+          rows,
+          expandable: true,
+          suffix: '--William Shakespeare',
+          onEllipsis: ellipsis => {
+            console.log('Ellipsis changed:', ellipsis);
+          },
+        }}
+        title={`${article}--William Shakespeare`}
+      >
+        {article}
+      </Paragraph>
+    </>
+  );
+}
+export const SuffixEllipsisDemo: ComponentStory<typeof Paragraph> = SuffixEllipsisTemplate.bind({});
+SuffixEllipsisDemo.storyName = '后缀'
+SuffixEllipsisDemo.decorators = [f => <>添加后缀的省略。{f()}</>]
+SuffixEllipsisDemo.args = {}
