@@ -1,0 +1,85 @@
+
+@import '~@study/style/src/themes/index.less';
+@import '~@study/style/src/mixins/index.less';
+
+.tabs-card{
+    .rc-tabs-nav{
+        .rc-tabs-nav-wrap{
+            border-bottom:1px solid #ccc;
+
+            .rc-tabs-tab {
+                margin:0 4px;
+                padding: 8px;
+                background: #fafafa;
+                border: 1px solid #ccc;
+                border-radius: 2px 2px 0 0;
+                transition: all 2s @ease-in-out;
+
+                &-active {
+                    color: rgb(24, 144, 255);;
+                    background: #fff;
+                    border-bottom-color: #fff;
+                }
+            }
+      
+            .rc-tabs-ink-bar {
+                visibility: hidden;
+            }
+        }
+    }
+}
+
+
+.rc-tabs-nav{
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    margin-bottom: 16px;
+
+    .rc-tabs-tab {
+        padding: 12px;
+        font-size: 14px;
+
+        .anticon{
+            margin-right: 12px;
+        }
+
+        &:hover{
+            color: rgb(24, 144, 255);;
+        }
+    }
+
+    .rc-tabs-tab-active{
+        border-bottom: 1px solid blue;
+    }
+
+    .rc-tabs-nav-wrap{
+        position: relative;
+        display: inline-block;
+        display: flex;
+        flex: auto;
+        align-self: stretch;
+        overflow: hidden;
+        white-space: nowrap;
+        transform: translate(0); 
+        
+        &::before,
+        &::after {
+            position: absolute;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity @animation-duration-slow;
+            content: '';
+            pointer-events: none;
+        }
+    }
+
+    .rc-tabs-nav-list {
+        position: relative;
+        display: flex;
+        transition: transform @animation-duration-slow;
+    }
+
+}
+
