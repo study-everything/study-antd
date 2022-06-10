@@ -23,3 +23,9 @@ $ npm run create:ts
 ```
 $ npm run create:js
 ```
+
+## 4. 如果遇到cannot resolve @study/util 或者 @study/style 这类的问题，在根目录下
+```
+$ pnpm -F @study/util build
+$ pnpm -F @study/style build
+```

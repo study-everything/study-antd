@@ -3,3 +3,4 @@ esm
 cjs
 lib
 .idea/
+.DS_Store
