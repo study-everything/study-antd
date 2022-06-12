@@ -237,6 +237,6 @@ TreeSelect.SHOW_ALL = SHOW_ALL;
 TreeSelect.SHOW_PARENT = SHOW_PARENT;
 TreeSelect.SHOW_CHILD = SHOW_CHILD;
 
-export { TreeNode };
+export { TreeNode, TreeSelect };
 
 export default TreeSelect;
