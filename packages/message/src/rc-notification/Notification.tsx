@@ -105,8 +105,8 @@ const Notification = forwardRef<NotificationsRef, NotificationProps>((props, ref
             {...config}
             eventKey={config.key}
             prefixCls={prefixCls}
-            className={motionClassName}
-            style={motionStyle}
+            className={classNames(motionClassName, config.className)}
+            style={{ ...motionStyle, ...config.style }}
             ref={nodeRef}
             onNoticeClose={onNoticeClose}
           />

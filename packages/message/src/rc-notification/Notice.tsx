@@ -48,7 +48,7 @@ const Notice = forwardRef<HTMLDivElement, NoticeProps>((props, ref) => {
      */
     if (duration > 0 && !hovering) {
       const timer = setTimeout(() => {
-        console.log('时间到啦--');
+        // console.log('时间到啦--');
         onInternalClose();
       }, duration * 1000);
 
@@ -57,12 +57,12 @@ const Notice = forwardRef<HTMLDivElement, NoticeProps>((props, ref) => {
        * 当然，组件卸载的时候也要清除
        */
       return () => {
-        console.log('清除定时器啦--');
+        // console.log('清除定时器啦--');
         clearTimeout(timer);
       };
     }
   }, [hovering, duration]);
-
+  
   return (
     <div
       {...restProps}
