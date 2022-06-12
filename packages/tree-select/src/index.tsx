@@ -1,4 +1,4 @@
 
-export type { TreeSelectProps } from './tree-select';
+export type { TreeSelectProps } from './TreeSelect';
 
-export { TreeSelect } from './tree-select';
+export { TreeSelect } from './TreeSelect';
