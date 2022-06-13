@@ -5,6 +5,10 @@ import Element from './Element'
 import Title from './Title'
 import { SkeletonParagraphProps } from './Paragraph';
 import Paragraph from './Paragraph';
+import SkeletonAvatar from './Avatar';
+import SkeletonButton from './Button';
+import SkeletonInput from './Input';
+import SkeletonImage from './Image';
 
 export interface SkeletonProps {
 	active?:boolean;
@@ -151,5 +155,10 @@ Skeleton.defaultProps = {
   title: true,
   paragraph: true,
 };
+
+Skeleton.Button = SkeletonButton;
+Skeleton.Avatar = SkeletonAvatar;
+Skeleton.Input = SkeletonInput;
+Skeleton.Image = SkeletonImage;
 
 export {Skeleton}

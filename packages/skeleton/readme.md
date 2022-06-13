@@ -29,6 +29,10 @@ export interface SkeletonElementProps {
 }
 ```
 
-组件：avatar, title, paragraph, button, input, image
+组件基本组成：avatar?, title?, paragraph?, 
+
+自己任意组合的组件：Avatar, button, input, image
 
 使用table布局，div元素不同宽高尺寸排列
+
+*  // omit 从对象上剔除某些属性
