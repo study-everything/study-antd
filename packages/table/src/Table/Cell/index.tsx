@@ -17,6 +17,24 @@ function Cell(
     render,
     children,
     component: Component = 'td',
+    colSpan,
+    rowSpan, // This is already merged on WrapperCell
+    fixLeft,
+    fixRight,
+    firstFixLeft,
+    lastFixLeft,
+    firstFixRight,
+    lastFixRight,
+    appendNode,
+    additionalProps = {},
+    ellipsis,
+    align,
+    rowType,
+    isSticky,
+
+    // Hover
+    hovering,
+    onHover,
   },
   ref,
 ) {
@@ -71,8 +89,12 @@ function Cell(
     title,
     className: classNames(cellPrefixCls, className, {}),
   };
-
-  return <Component {...componentProps}>{mergedChildNode}</Component>;
+  return (
+    <Component {...componentProps}>
+      {appendNode}
+      {mergedChildNode}
+    </Component>
+  );
 }
 
 const RefCell = React.forwardRef(Cell);

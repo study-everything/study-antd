@@ -1,16 +1,37 @@
 import * as React from 'react';
 import BodyContext from '../context/BodyContext';
 import TableContext from '../context/TableContext';
+import type { GetRowKey, Key, GetComponentProps } from '../interface';
 import useFlattenRecords from '../hooks/useFlattenRecords';
 import BodyRow from './BodyRow';
 
-function Body({ data, emptyNode, childrenColumnName, getRowKey }) {
+export interface BodyProps<RecordType> {
+  data: readonly RecordType[];
+  getRowKey: GetRowKey<RecordType>;
+  measureColumnWidth: boolean;
+  expandedKeys: Set<Key>;
+  onRow: GetComponentProps<RecordType>;
+  rowExpandable: (record: RecordType) => boolean;
+  emptyNode: React.ReactNode;
+  childrenColumnName: string;
+}
+
+function Body<RecordType>({
+  data,
+  getRowKey,
+  measureColumnWidth,
+  expandedKeys,
+  onRow,
+  rowExpandable,
+  emptyNode,
+  childrenColumnName,
+}: BodyProps<RecordType>) {
   const { prefixCls, getComponent } = React.useContext(TableContext);
   const { flattenColumns } = React.useContext(BodyContext);
   // console.log('flattenColumns', flattenColumns);
 
-  const flattenData = useFlattenRecords(data, childrenColumnName);
-
+  const flattenData = useFlattenRecords(data, childrenColumnName, expandedKeys, getRowKey);
+  
   // ====================== Render ======================
   const bodyNode = React.useMemo(() => {
     const WrapperComponent = getComponent(['body', 'wrapper'], 'tbody');
@@ -34,6 +55,11 @@ function Body({ data, emptyNode, childrenColumnName, getRowKey }) {
             renderIndex={renderIndex}
             rowComponent={trComponent}
             cellComponent={tdComponent}
+            expandedKeys={expandedKeys}
+            onRow={onRow}
+            getRowKey={getRowKey}
+            rowExpandable={rowExpandable}
+            childrenColumnName={childrenColumnName}
             indent={indent}
           />
         );
@@ -42,7 +68,7 @@ function Body({ data, emptyNode, childrenColumnName, getRowKey }) {
       rows = emptyNode;
     }
     return <WrapperComponent className={`${prefixCls}-tbody`}>{rows}</WrapperComponent>;
-  }, [data, prefixCls]);
+  }, [data, prefixCls, flattenData]);
 
   return bodyNode;
 }
