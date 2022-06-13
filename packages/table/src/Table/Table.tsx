@@ -171,6 +171,10 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   const mergedChildrenColumnName = childrenColumnName || 'children';
 
   const expandableType = React.useMemo<ExpandableType>(() => {
+    if (expandedRowRender) {
+      return 'row';
+    }
+    
     if (
       mergedData.some(
         record => record && typeof record === 'object' && record[mergedChildrenColumnName],
@@ -326,6 +330,7 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
       expandableType,
       onTriggerExpand,
       indentSize,
+      expandedRowRender,
     }),
     [
       mergedTableLayout,
@@ -334,6 +339,7 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
       onTriggerExpand,
       mergedExpandIcon,
       indentSize,
+      expandedRowRender,
     ],
   );
 

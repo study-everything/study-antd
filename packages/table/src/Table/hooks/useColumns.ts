@@ -9,6 +9,7 @@ import type {
   RenderExpandIcon,
   ColumnGroupType,
 } from '../interface';
+import { INTERNAL_COL_DEFINE } from '../utils/legacyUtil';
 import { EXPAND_COLUMN } from '../constant';
 
 function flatColumns<RecordType>(columns: ColumnsType<RecordType>): ColumnType<RecordType>[] {
@@ -73,6 +74,47 @@ function useColumns<RecordType>(
   const withExpandColumns = React.useMemo(() => {
     if (expandable) {
       let cloneColumns = baseColumns.slice();
+      if (!cloneColumns.includes(EXPAND_COLUMN)) {
+        const expandColIndex = expandIconColumnIndex || 0;
+        if (expandColIndex >= 0) {
+          cloneColumns.splice(expandColIndex, 0, EXPAND_COLUMN);
+        }
+      }
+
+      const expandColumnIndex = cloneColumns.indexOf(EXPAND_COLUMN);
+      cloneColumns = cloneColumns.filter(
+        (column, index) => column !== EXPAND_COLUMN || index === expandColumnIndex,
+      );
+
+      const prevColumn = baseColumns[expandColumnIndex];
+
+      let fixedColumn: FixedType | null = null;
+
+      const expandColumn = {
+        [INTERNAL_COL_DEFINE]: {
+          className: `${prefixCls}-expand-icon-col`,
+          columnType: 'EXPAND_COLUMN',
+        },
+        title: '',
+        className: `${prefixCls}-row-expand-icon-cell`,
+        width: columnWidth,
+        render: (_, record, index) => {
+          const rowKey = getRowKey(record, index);
+          const expanded = expandedKeys.has(rowKey);
+          const recordExpandable = rowExpandable ? rowExpandable(record) : true;
+
+          const icon = expandIcon({
+            prefixCls,
+            expanded,
+            expandable: recordExpandable,
+            record,
+            onExpand: onTriggerExpand,
+          });
+          return icon;
+        },
+      };
+
+      return cloneColumns.map(col => (col === EXPAND_COLUMN ? expandColumn : col));
     }
     return baseColumns.filter(col => col !== EXPAND_COLUMN);
   }, [expandable, baseColumns, getRowKey, expandedKeys, expandIcon, direction]);
