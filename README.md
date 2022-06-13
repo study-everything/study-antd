@@ -70,7 +70,7 @@ $ pnpm -F @study/style build
 - [ ] Collapse折叠面板
 - [ ] Comment评论
 - [ ] Descriptions描述列表
-- [ ] Empty空状态
+- [x] Empty空状态
 - [ ] Image图片
 - [ ] List列表
 - [ ] Popover气泡卡片
