@@ -1,5 +1,5 @@
 {
-	"name": "@study/notification",
+	"name": "@study/notifiaction",
 	"main": "cjs/index.js",
 	"module": "esm/index.js",
 	"typings": "lib/index.d.ts",

@@ -36,8 +36,7 @@ async function getRollupConfig(config = {}){
 			extensions: isTypescript() ? ['.ts', '.tsx', '.js', '.jsx'] : ['.js', '.jsx']
 		}),
 		isTypescript() ? typescript({
-			tsconfig: path.resolve(cwd(), 'tsconfig.json'),
-			// tsconfigOverride: { compilerOptions: {rootDir: getRootDir() }}
+			tsconfig: path.resolve(cwd(), 'tsconfig.json'), // tsconfig 要指定 module 不能是 commonjs，否则typescript 将目标代码转为commonjs，后续不能转成 esm
 			
 		}) : null,
 		babel({
