@@ -110,10 +110,14 @@ function BodyRow<RecordType extends { children?: readonly RecordType[] }>(
             </>
           );
         }
+        let additionalCellProps: React.HtmlHTMLAttributes<HTMLElement>;
+        if (column.onCell) {
+          additionalCellProps = column.onCell(record, index);
+        }
         return (
           <Cell
             className={columnClassName}
-            // ellipsis={column.ellipsis}
+            ellipsis={column.ellipsis}
             prefixCls={prefixCls}
             key={key}
             record={record}
@@ -124,6 +128,7 @@ function BodyRow<RecordType extends { children?: readonly RecordType[] }>(
             component={cellComponent}
             expanded={appendCellNode}
             appendNode={appendCellNode}
+            additionalProps={additionalCellProps}
           />
         );
       })}

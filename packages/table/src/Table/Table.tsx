@@ -174,7 +174,7 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     if (expandedRowRender) {
       return 'row';
     }
-    
+
     if (
       mergedData.some(
         record => record && typeof record === 'object' && record[mergedChildrenColumnName],
@@ -262,6 +262,9 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   const mergedTableLayout = React.useMemo(() => {
     if (tableLayout) {
       return tableLayout;
+    }
+    if (flattenColumns.some(({ ellipsis }) => ellipsis)) {
+      return 'fixed';
     }
     return 'auto';
   }, [tableLayout]);

@@ -1,12 +1,63 @@
-import classNames from 'classnames';
 import * as React from 'react';
+import classNames from 'classnames';
+import type {
+  DataIndex,
+  ColumnType,
+  RenderedCell,
+  CustomizeComponent,
+  CellType,
+  DefaultRecordType,
+  AlignType,
+  CellEllipsisType,
+} from '../interface';
 import { getPathValue, validateValue } from '../utils/valueUtil';
 
 function isRenderCell(data) {
   return data && typeof data === 'object' && !Array.isArray(data) && !React.isValidElement(data);
 }
+interface InternalCellProps<RecordType extends DefaultRecordType>
+  extends Pick<HoverContextProps, 'onHover'> {
+  prefixCls?: string;
+  className?: string;
+  record?: RecordType;
+  /** `column` index is the real show rowIndex */
+  index?: number;
+  /** the index of the record. For the render(value, record, renderIndex) */
+  renderIndex?: number;
+  dataIndex?: DataIndex;
+  render?: ColumnType<RecordType>['render'];
+  component?: CustomizeComponent;
+  children?: React.ReactNode;
+  colSpan?: number;
+  rowSpan?: number;
+  ellipsis?: CellEllipsisType;
+  align?: AlignType;
 
-function Cell(
+  shouldCellUpdate?: (record: RecordType, prevRecord: RecordType) => boolean;
+
+  // Fixed
+  fixLeft?: number | false;
+  fixRight?: number | false;
+  firstFixLeft?: boolean;
+  lastFixLeft?: boolean;
+  firstFixRight?: boolean;
+  lastFixRight?: boolean;
+
+  // ====================== Private Props ======================
+  /** @private Used for `expandable` with nest tree */
+  appendNode?: React.ReactNode;
+  additionalProps?: React.TdHTMLAttributes<HTMLTableCellElement>;
+  /** @private Fixed for user use `shouldCellUpdate` which block the render */
+  expanded?: boolean;
+
+  rowType?: 'header' | 'body' | 'footer';
+
+  isSticky?: boolean;
+
+  hovering?: boolean;
+}
+
+function Cell<RecordType extends DefaultRecordType>(
   {
     prefixCls,
     className,
@@ -35,26 +86,31 @@ function Cell(
     // Hover
     hovering,
     onHover,
-  },
-  ref,
-) {
+  }: InternalCellProps<RecordType>,
+  ref: React.Ref<any>,
+): React.ReactElement {
   const cellPrefixCls = `${prefixCls}-cell`;
 
   // ==================== Child Node ====================
-  const [childNode, legacyCellProps] = React.useMemo(() => {
+  const [childNode, legacyCellProps] = React.useMemo<
+    [React.ReactNode, CellType<RecordType>] | [React.ReactNode]
+  >(() => {
     if (validateValue(children)) {
       return [children];
     }
     // Customize render node
-    const value = getPathValue(record, dataIndex);
+    const value = getPathValue<Record<string, unknown> | React.ReactNode, RecordType>(
+      record,
+      dataIndex,
+    );
+
     let returnChildNode = value;
-    let returnCellProps;
+    let returnCellProps: CellType<RecordType> | undefined;
 
     if (render) {
       const renderData = render(value, record, renderIndex);
       // 判断返回的是否为react元素
       if (isRenderCell(renderData)) {
-        // 发出警告
         returnChildNode = renderData.children;
         returnCellProps = renderData.props;
       } else {
@@ -63,7 +119,18 @@ function Cell(
     }
 
     return [returnChildNode, returnCellProps];
-  }, [render]);
+  }, [
+    /* eslint-disable react-hooks/exhaustive-deps */
+    // Always re-render if `renderWithProps`
+    // perfRecord.renderWithProps ? Math.random() : 0,
+    /* eslint-enable */
+    children,
+    dataIndex,
+    // perfRecord,
+    record,
+    render,
+    renderIndex,
+  ]);
 
   let mergedChildNode = childNode;
 
@@ -76,7 +143,23 @@ function Cell(
     mergedChildNode = null;
   }
 
-  const { className: cellClassName } = legacyCellProps || {};
+  // if (ellipsis) {
+  //   mergedChildNode = <span className={`${cellPrefixCls}-content`}>{mergedChildNode}</span>;
+  // }
+
+  const {
+    colSpan: cellColSpan,
+    rowSpan: cellRowSpan,
+    style: cellStyle,
+    className: cellClassName,
+    ...restCellProps
+  } = legacyCellProps || {};
+  const mergedColSpan = (cellColSpan !== undefined ? cellColSpan : colSpan) ?? 1;
+  const mergedRowSpan = (cellRowSpan !== undefined ? cellRowSpan : rowSpan) ?? 1;
+
+  if (mergedColSpan === 0 || mergedRowSpan === 0) {
+    return null;
+  }
   // ====================== Fixed =======================
 
   // ====================== Align =======================
@@ -84,10 +167,23 @@ function Cell(
   // ====================== Hover =======================
 
   // ====================== Render ======================
-  const title = '';
+  const title = null;
   const componentProps = {
     title,
-    className: classNames(cellPrefixCls, className, {}),
+    ...restCellProps,
+    ...additionalProps,
+    colSpan: mergedColSpan !== 1 ? mergedColSpan : null,
+    rowSpan: mergedRowSpan !== 1 ? mergedRowSpan : null,
+    className: classNames(
+      cellPrefixCls,
+      className,
+      {
+        [`${cellPrefixCls}-ellipsis`]: ellipsis,
+      },
+      additionalProps.className,
+      cellClassName,
+    ),
+    style: { ...cellStyle },
   };
   return (
     <Component {...componentProps}>
@@ -106,7 +202,10 @@ const WrappedCell = React.forwardRef((props, ref) => {
   const { index, additionalProps = {}, colSpan, rowSpan } = props;
   const { colSpan: cellColSpan, rowSpan: cellRowSpan } = additionalProps;
 
-  return <MemoCell {...props} ref={ref} />;
+  const mergedColSpan = colSpan ?? cellColSpan;
+  const mergedRowSpan = rowSpan ?? cellRowSpan;
+
+  return <MemoCell {...props} colSpan={mergedColSpan} rowSpan={mergedRowSpan} ref={ref} />;
 });
 
 WrappedCell.displayName = 'WrappedCell';
