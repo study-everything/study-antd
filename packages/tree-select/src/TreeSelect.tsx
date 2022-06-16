@@ -20,7 +20,7 @@ import { getTransitionName, getTransitionDirection } from 'antd/es/_util/motion'
 import { FormItemInputContext } from 'antd/es/form/context';
 import type { InputStatus } from 'antd/es/_util/statusUtils';
 import { getMergedStatus, getStatusClassNames } from 'antd/es/_util/statusUtils';
-import defaultRenderEmpty from 'antd/es/config-provider/renderEmpty';
+import defaultRenderEmpty from 'antd/es/config-provider/defaultRenderEmpty';
 
 type RawValue = string | number;
 
