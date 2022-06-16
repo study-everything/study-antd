@@ -2,8 +2,9 @@ import React from 'react';
 import RcDropdown from 'rc-dropdown';
 import classNames from 'classname';
 import { RightOutlined } from '@ant-design/icons';
+import { cloneElement } from '@study/util';
 import type { DropdownInterface } from './types';
-import { cloneElement } from './reactNode';
+import getPlacements from './placements';
 import 'rc-dropdown/assets/index.css';
 import './style';
 
@@ -84,9 +85,15 @@ const Dropdown: DropdownInterface = props => {
     return fixedModeOverlay as React.ReactElement;
   };
 
+  const builtinPlacements = getPlacements({
+    arrowPointAtCenter: typeof arrow === 'object' && arrow.pointAtCenter,
+    autoAdjustOverflow: true,
+  });
+
   return (
     <RcDropdown
       {...rests}
+      builtinPlacements={builtinPlacements}
       arrow={!!arrow}
       overlayClassName={overlayClassName}
       prefixCls={prefixCls}

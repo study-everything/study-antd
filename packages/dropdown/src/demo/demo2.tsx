@@ -48,11 +48,11 @@ export default function Demo1() {
       <Dropdown overlay={menu} placement="bottomRight">
         <Button>bottomRight</Button>
       </Dropdown>
-      <br />
+      <div style={{ height: 100 }} />
       <Dropdown overlay={menu} placement="topLeft">
         <Button>topLeft</Button>
       </Dropdown>
-      <Dropdown overlay={menu} placement="top">
+      <Dropdown overlay={menu} placement="top" trigger={['click']}>
         <Button>top</Button>
       </Dropdown>
       <Dropdown overlay={menu} placement="topRight">

@@ -48,7 +48,7 @@ export default function Demo1() {
       <Dropdown overlay={menu} placement="bottomRight" arrow={{ pointAtCenter: true }}>
         <Button>bottomRight</Button>
       </Dropdown>
-      <br />
+      <div style={{ height: 100 }} />
       <Dropdown overlay={menu} placement="topLeft" arrow={{ pointAtCenter: true }}>
         <Button>topLeft</Button>
       </Dropdown>
