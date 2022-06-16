@@ -12,10 +12,17 @@ function HeaderRow({
   index,
 }) {
   const { prefixCls } = React.useContext(TableContext);
+
   return (
     <RowComponent>
       {cells.map((cell, cellIndex) => {
         const { column } = cell;
+
+        let additionalProps: React.HTMLAttributes<HTMLElement>;
+        if (column && column.onHeaderCell) {
+          additionalProps = cell.column.onHeaderCell(column);
+        }
+
         return (
           <Cell
             {...cell}
@@ -23,6 +30,7 @@ function HeaderRow({
             align={column.align}
             component={CellComponent}
             prefixCls={prefixCls}
+            additionalProps={additionalProps}
             // {...fixedInfo}
             rowType="header"
           />

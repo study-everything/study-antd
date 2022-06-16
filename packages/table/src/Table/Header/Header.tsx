@@ -1,11 +1,26 @@
 import * as React from 'react';
+import type {
+  ColumnsType,
+  CellType,
+  StickyOffsets,
+  ColumnType,
+  GetComponentProps,
+  ColumnGroupType,
+} from '../interface';
 import HeaderRow from './HeaderRow';
 import TableContext from '../context/TableContext';
 
-function parseHeaderRows(rootColumns) {
-  const rows = [];
+function parseHeaderRows<RecordType>(
+  rootColumns: ColumnsType<RecordType>,
+): CellType<RecordType>[][] {
+  const rows: CellType<RecordType>[][] = [];
 
-  function fillRowCells(columns, colIndex, rowIndex = 0) {
+  function fillRowCells(
+    columns: ColumnsType<RecordType>,
+    colIndex: number,
+    rowIndex: number = 0,
+  ): number[] {
+    // Init rows
     rows[rowIndex] = rows[rowIndex] || [];
     let currentColIndex = colIndex;
 
@@ -17,16 +32,24 @@ function parseHeaderRows(rootColumns) {
         column,
         colStart: currentColIndex,
       };
+
       let colSpan: number = 1;
 
-      const subColumns = column.children;
+      const subColumns = (column as ColumnGroupType<RecordType>).children;
       if (subColumns && subColumns.length > 0) {
-      }
-      if ('colSpan' in column) {
+        colSpan = fillRowCells(subColumns, currentColIndex, rowIndex + 1).reduce(
+          (total, count) => total + count,
+          0,
+        );
       }
 
-      if ('rowSpan' in column) {
-      }
+      // if (subColumns && subColumns.length > 0) {
+      // }
+      // if ('colSpan' in column) {
+      // }
+
+      // if ('rowSpan' in column) {
+      // }
 
       cell.colSpan = colSpan;
       cell.colEnd = cell.colStart + colSpan - 1;

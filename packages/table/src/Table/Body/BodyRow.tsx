@@ -4,8 +4,35 @@ import Cell from '../Cell';
 import BodyContext from '../context/BodyContext';
 import TableContext from '../context/TableContext';
 import { getColumnsKey } from '../utils/valueUtil';
+import type {
+  ColumnType,
+  CustomizeComponent,
+  GetComponentProps,
+  Key,
+  GetRowKey,
+} from '../interface';
 
-function BodyRow(props) {
+export interface BodyRowProps<RecordType> {
+  record: RecordType;
+  index: number;
+  renderIndex: number;
+  className?: string;
+  style?: React.CSSProperties;
+  recordKey: Key;
+  expandedKeys: Set<Key>;
+  rowComponent: CustomizeComponent;
+  cellComponent: CustomizeComponent;
+  onRow: GetComponentProps<RecordType>;
+  rowExpandable: (record: RecordType) => boolean;
+  indent?: number;
+  rowKey: React.Key;
+  getRowKey: GetRowKey<RecordType>;
+  childrenColumnName: string;
+}
+
+function BodyRow<RecordType extends { children?: readonly RecordType[] }>(
+  props: BodyRowProps<RecordType>,
+) {
   const {
     className,
     style,
@@ -41,8 +68,11 @@ function BodyRow(props) {
     }
   }, [expanded]);
 
+  const rowSupportExpand = expandableType === 'row' && (!rowExpandable || rowExpandable(record));
+
   const nestExpandable = expandableType === 'nest';
   const hasNestChildren = childrenColumnName && record && record[childrenColumnName];
+  const mergedExpandable = rowSupportExpand || nestExpandable;
 
   // ======================== Expandable =========================
   // const onExpandRef = React.useRef(onTriggerExpand);
@@ -80,10 +110,14 @@ function BodyRow(props) {
             </>
           );
         }
+        let additionalCellProps: React.HtmlHTMLAttributes<HTMLElement>;
+        if (column.onCell) {
+          additionalCellProps = column.onCell(record, index);
+        }
         return (
           <Cell
             className={columnClassName}
-            // ellipsis={column.ellipsis}
+            ellipsis={column.ellipsis}
             prefixCls={prefixCls}
             key={key}
             record={record}
@@ -94,6 +128,7 @@ function BodyRow(props) {
             component={cellComponent}
             expanded={appendCellNode}
             appendNode={appendCellNode}
+            additionalProps={additionalCellProps}
           />
         );
       })}
