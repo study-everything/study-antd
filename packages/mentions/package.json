@@ -1,0 +1,23 @@
+{
+	"name": "@study/mentions",
+	"main": "cjs/index.js",
+	"module": "esm/index.js",
+	"typings": "lib/index.d.ts",
+	"scripts": {
+		"build": "gulp"
+	},
+	"devDependencies": {
+		"react": "^18.1.0"
+	},
+	"peerDependencies": {
+		"react": "^18.1.0"
+	},
+	"dependencies": {
+		"@study/style": "^1.0.0",
+		"@study/util": "^1.0.0",
+		"classname": "^0.0.0",
+		"rc-mentions": "^1.8.0",
+		"rc-select": "^14.1.5",
+		"tslib": "^2.4.0"
+	}
+}
