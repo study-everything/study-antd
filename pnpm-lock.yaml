@@ -287,6 +287,25 @@ importers:
     devDependencies:
       react: registry.npmmirror.com/react/18.1.0
 
+  packages/notifiaction:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      classnames: ^2.3.1
+      rc-motion: ^2.6.0
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: registry.npmmirror.com/classname/0.0.0
+      rc-motion: registry.npmmirror.com/rc-motion/2.6.0_react@18.1.0
+      tslib: registry.npmmirror.com/tslib/2.4.0
+    devDependencies:
+      classnames: registry.npmmirror.com/classnames/2.3.1
+      react: registry.npmmirror.com/react/18.1.0
+
   packages/popconfirm:
     specifiers:
       '@study/style': ^1.0.0

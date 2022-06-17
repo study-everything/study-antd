@@ -1,3 +1,5 @@
+import type React from 'react';
+
 type Partial<T extends object> = {
   [P in keyof T]?: T[P];
 };
@@ -25,6 +27,8 @@ export type INoticeConfig = Partial<{
   duration: number;
   closeIcon: React.ReactNode;
   closable: boolean;
+  className: string;
+  style: React.CSSProperties;
   onClose: IFn<void>;
 }>;
 
@@ -40,4 +44,17 @@ export type ICommonAPI = {
 };
 
 export type INotificationsRef = Partial<ICommonAPI>;
-export type INotificationAPI = Partial<ICommonAPI>
+export type INotificationAPI = Partial<ICommonAPI>;
+
+export type IOpenTask = {
+  type: INotificationTypes.OPEN;
+  config: IOpenConfig;
+};
+export type ICloseTask = {
+  type: INotificationTypes.CLOSE;
+  key: React.Key;
+};
+export type IDestroyTask = {
+  type: INotificationTypes.DESTROY;
+};
+export type ITask = IOpenTask | ICloseTask | IDestroyTask;

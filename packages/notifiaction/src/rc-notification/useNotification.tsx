@@ -1,29 +1,21 @@
 import * as React from 'react';
 import type {
+  ICloseTask,
   IFn,
   INotificationAPI,
   INotificationConfig,
   INotificationsRef,
-  IOpenConfig,
+  IOpenTask,
+  ITask,
 } from './types';
 import { INotificationTypes } from './types';
 
+// 此处表示默认的构造容器
 const getDefaultContainer: IFn<HTMLElement> = () => document.body;
-
-type IOpenTask = {
-  type: INotificationTypes.OPEN;
-  config: IOpenConfig;
-};
-type ICloseTask = {
-  type: INotificationTypes.CLOSE;
-  key: React.Key;
-};
-type IDestroyTask = {
-  type: INotificationTypes.DESTROY;
-};
-type ITask = IOpenTask | ICloseTask | IDestroyTask;
+// 默认增长的主键
 let uniqueKey = 0;
 
+// 默认导出的方法
 export default function useNotification(
   rootConfig: INotificationConfig = {},
 ): [INotificationAPI, React.ReactElement] {
@@ -34,6 +26,9 @@ export default function useNotification(
     closeIcon,
     closable,
   } = rootConfig;
+
+  // 组成mergeConfig 为了以后的合并
+  const unMergeConfig = {duration, closeIcon, closable}
 
   // 设置root container
   const [rootContainer, setRootContainer] = React.useState<HTMLElement>();
@@ -50,7 +45,7 @@ export default function useNotification(
     setRootContainer(getContainer());
   });
 
-  // 表示任务策略
+  // 表示任务策略 不同的任务执行不同的事情
   const taskStrategy: Record<INotificationTypes, IFn<void>> = {
     [INotificationTypes.OPEN](task: IOpenTask) {
       notificationRef.current.open(task.config);
@@ -80,7 +75,7 @@ export default function useNotification(
   const Api = React.useMemo<INotificationAPI>(
     () => ({
       open(config) {
-        const mergeConfig = Object.assign(config);
+        const mergeConfig = Object.assign(unMergeConfig, config);
         if (mergeConfig.key === null || mergeConfig.key === undefined) {
           mergeConfig.key = `study-notification-${uniqueKey}`;
           uniqueKey++;
