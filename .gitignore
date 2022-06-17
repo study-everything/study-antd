@@ -4,3 +4,4 @@ cjs
 lib
 .idea/
 .DS_Store
+.vscode
