@@ -166,7 +166,366 @@ importers:
       rc-select: registry.npmmirror.com/rc-select/14.1.5_react@18.1.0
       tslib: registry.npmmirror.com/tslib/2.4.0
     devDependencies:
+      react: 18.1.0
+
+  packages/button:
+    specifiers:
+      '@ant-design/icons': ^4.7.0
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      rc-motion: ^2.6.0
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@ant-design/icons': 4.7.0_react-dom@18.1.0+react@18.1.0
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      rc-motion: 2.6.0_react-dom@18.1.0+react@18.1.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/carousel:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/dropdown:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      rc-dropdown: ~4.0.0
+      rc-menu: 9.6.0
+      rc-tooltip: ^5.1.1
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      rc-dropdown: 4.0.1_react-dom@18.1.0+react@18.1.0
+      rc-menu: 9.6.0_react-dom@18.1.0+react@18.1.0
+      rc-tooltip: 5.1.1_react-dom@18.1.0+react@18.1.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/empty:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/input:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      classnames: ^2.3.1
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      classnames: 2.3.1
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/list:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      rc-animate: ^3.1.1
+      rc-resize-observer: ^1.2.0
+      rc-util: ^5.21.4
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      rc-animate: 3.1.1
+      rc-resize-observer: 1.2.0_react-dom@18.1.0+react@18.1.0
+      rc-util: 5.21.5_react-dom@18.1.0+react@18.1.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/menu:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/message:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      rc-motion: ^2.6.0
+      react: ^18.1.0
+      react-dom: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      rc-motion: 2.6.0_react-dom@18.1.0+react@18.1.0
+      react-dom: 18.1.0_react@18.1.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/notifiaction:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/notifiaction:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      classnames: ^2.3.1
+      rc-motion: ^2.6.0
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: registry.npmmirror.com/classname/0.0.0
+      rc-motion: registry.npmmirror.com/rc-motion/2.6.0_react@18.1.0
+      tslib: registry.npmmirror.com/tslib/2.4.0
+    devDependencies:
+      classnames: registry.npmmirror.com/classnames/2.3.1
       react: registry.npmmirror.com/react/18.1.0
+
+  packages/popconfirm:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/skeleton:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/spin:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/style:
+    specifiers: {}
+
+  packages/switch:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      '@types/react': ^18.0.9
+      classname: ^0.0.0
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      '@types/react': 18.0.12
+      classname: 0.0.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/table:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      rc-animate: ^3.1.1
+      rc-dropdown: ^4.0.1
+      rc-menu: ^9.6.0
+      rc-table: ^7.24.2
+      rc-tooltip: ^5.1.1
+      react: ^18.1.0
+      react-resizable: ^3.0.4
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      rc-animate: 3.1.1
+      rc-dropdown: 4.0.1_react-dom@18.1.0+react@18.1.0
+      rc-menu: 9.6.0_react-dom@18.1.0+react@18.1.0
+      rc-table: 7.24.2_react-dom@18.1.0+react@18.1.0
+      rc-tooltip: 5.1.1_react-dom@18.1.0+react@18.1.0
+      react-resizable: 3.0.4_react-dom@18.1.0+react@18.1.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/tabs:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      rc-tabs: ^11.16.0
+      react: ^18.1.0
+      react-dom: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      rc-tabs: 11.16.0_react-dom@18.1.0+react@18.1.0
+      react-dom: 18.1.0_react@18.1.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/transfer:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      classnames: ^2.3.1
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      classnames: 2.3.1
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/tree-select:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      rc-motion: ^2.6.0
+      rc-tree-select: ^5.4.0
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      rc-motion: 2.6.0_react-dom@18.1.0+react@18.1.0
+      rc-tree-select: 5.4.0_react-dom@18.1.0+react@18.1.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/typography:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      copy-to-clipboard: ^3.3.1
+      rc-resize-observer: ^1.2.0
+      rc-textarea: ^0.3.7
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      copy-to-clipboard: 3.3.1
+      rc-resize-observer: 1.2.0_react-dom@18.1.0+react@18.1.0
+      rc-textarea: 0.3.7_react-dom@18.1.0+react@18.1.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
+  packages/util:
+    specifiers:
+      '@types/node': ^17.0.36
+      '@types/react': ^18.0.9
+      '@types/react-dom': ^18.0.5
+      rc-util: ^5.21.4
+      react: ^18.1.0
+    dependencies:
+      rc-util: 5.21.5_react-dom@18.1.0+react@18.1.0
+    devDependencies:
+      '@types/node': 17.0.42
+      '@types/react': 18.0.12
+      '@types/react-dom': 18.0.5
+      react: 18.1.0
 
 packages:
 
