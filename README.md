@@ -40,7 +40,7 @@ $ pnpm -F @study/style build
 - [ ] Space间距
 - [ ] Affix固钉
 - [ ] Breadcrumb面包屑
-- [ ] Dropdown下拉菜单
+- [x] Dropdown下拉菜单
 - [ ] Menu导航菜单
 - [ ] PageHeader页头
 - [ ] Pagination分页
