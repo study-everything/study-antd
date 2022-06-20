@@ -31,7 +31,7 @@ function Body<RecordType>({
   // console.log('flattenColumns', flattenColumns);
 
   const flattenData = useFlattenRecords(data, childrenColumnName, expandedKeys, getRowKey);
-  
+
   // ====================== Render ======================
   const bodyNode = React.useMemo(() => {
     const WrapperComponent = getComponent(['body', 'wrapper'], 'tbody');
@@ -40,7 +40,6 @@ function Body<RecordType>({
 
     let rows: React.ReactNode;
     if (data.length) {
-      // console.log('flattenData', flattenData);
       rows = flattenData.map((item, idx) => {
         const { record, indent, index: renderIndex } = item;
 
@@ -69,6 +68,8 @@ function Body<RecordType>({
     }
     return <WrapperComponent className={`${prefixCls}-tbody`}>{rows}</WrapperComponent>;
   }, [data, prefixCls, flattenData]);
+
+  
 
   return bodyNode;
 }

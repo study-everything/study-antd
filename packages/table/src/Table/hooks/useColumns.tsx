@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import type {
   ColumnsType,
   ColumnType,
@@ -11,6 +12,7 @@ import type {
 } from '../interface';
 import { INTERNAL_COL_DEFINE } from '../utils/legacyUtil';
 import { EXPAND_COLUMN } from '../constant';
+import { spawn } from 'child_process';
 
 function flatColumns<RecordType>(columns: ColumnsType<RecordType>): ColumnType<RecordType>[] {
   return columns.reduce((list, column) => {
@@ -74,6 +76,7 @@ function useColumns<RecordType>(
   const withExpandColumns = React.useMemo(() => {
     if (expandable) {
       let cloneColumns = baseColumns.slice();
+
       if (!cloneColumns.includes(EXPAND_COLUMN)) {
         const expandColIndex = expandIconColumnIndex || 0;
         if (expandColIndex >= 0) {
@@ -96,6 +99,7 @@ function useColumns<RecordType>(
           columnType: 'EXPAND_COLUMN',
         },
         title: '',
+        fixed: fixedColumn,
         className: `${prefixCls}-row-expand-icon-cell`,
         width: columnWidth,
         render: (_, record, index) => {
@@ -110,6 +114,11 @@ function useColumns<RecordType>(
             record,
             onExpand: onTriggerExpand,
           });
+
+          if (expandRowByClick) {
+            return <span onClick={e => e.stopPropagation()}>{icon}</span>;
+          }
+
           return icon;
         },
       };

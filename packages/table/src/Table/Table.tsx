@@ -7,8 +7,9 @@ import ColGroup from './ColGroup';
 import { getExpandableProps } from './utils/legacyUtil';
 import { findAllChildrenKeys, renderExpandIcon } from './utils/expandUtil';
 import ResizeContext from './context/ResizeContext';
-import { getPathValue, mergeObject } from './utils/valueUtil';
+import { getPathValue, mergeObject, validateValue, getColumnsKey } from './utils/valueUtil';
 import Header from './Header/Header';
+import FixedHolder from './FixedHolder';
 import type {
   GetRowKey,
   ColumnsType,
@@ -30,6 +31,7 @@ import type {
   TableSticky,
 } from './interface';
 import useColumns from './hooks/useColumns';
+import { useLayoutState } from './hooks/useFrame';
 import ExpandedRowContext from './context/ExpandedRowContext';
 
 // Used for conditions cache
@@ -250,6 +252,34 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   );
 
   // ====================== Scroll ======================
+  const [colsWidths, updateColsWidths] = useLayoutState(new Map<React.Key, number>());
+
+  // Convert map to number width
+  const colsKeys = getColumnsKey(flattenColumns);
+  const pureColWidths = colsKeys.map(columnKey => colsWidths.get(columnKey));
+  const colWidths = React.useMemo(() => pureColWidths, [pureColWidths.join('_')]);
+  const fixHeader = scroll && validateValue(scroll.y);
+  const horizonScroll = scroll && validateValue(scroll.x);
+
+  // Scroll
+  let scrollXStyle: React.CSSProperties;
+  let scrollYStyle: React.CSSProperties;
+  let scrollTableStyle: React.CSSProperties;
+
+  if (fixHeader) {
+    scrollYStyle = {
+      overflowY: 'scroll',
+      maxHeight: scroll.y,
+    };
+  }
+
+  if (horizonScroll) {
+    scrollYStyle = { overflow: 'auto' };
+
+    if (fixHeader) {
+      scrollYStyle = { overflowY: 'hidden' };
+    }
+  }
 
   // ===================== Effects ======================
 
@@ -271,8 +301,8 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
 
   // Header props
   const headerProps = {
-    // colWidths,
-    // columCount: flattenColumns.length,
+    colWidths,
+    columCount: flattenColumns.length,
     // stickyOffsets,
     // onHeaderRow,
     // fixHeader,
@@ -299,15 +329,27 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   );
 
   let groupTableNode: React.ReactNode;
-  groupTableNode = (
-    <div className={classNames(`${prefixCls}-content`)}>
-      <TableComponent style={{ tableLayout: mergedTableLayout }}>
-        {bodyColGroup}
-        {showHeader !== false && <Header {...headerProps} {...columnContext} />}
-        {bodyTable}
-      </TableComponent>
-    </div>
-  );
+  console.log('fixHeader', fixHeader);
+  if (fixHeader) {
+    groupTableNode = (
+      <>
+        {/* Header Table */}
+        {showHeader !== false && <FixedHolder></FixedHolder>}
+
+        {/* Body Table */}
+      </>
+    );
+  } else {
+    groupTableNode = (
+      <div className={classNames(`${prefixCls}-content`)}>
+        <TableComponent style={{ tableLayout: mergedTableLayout }}>
+          {bodyColGroup}
+          {showHeader !== false && <Header {...headerProps} {...columnContext} />}
+          {bodyTable}
+        </TableComponent>
+      </div>
+    );
+  }
 
   let fullTable = (
     <div className={classNames(prefixCls)}>
