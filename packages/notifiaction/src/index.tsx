@@ -1,4 +1,5 @@
+import useNotification from './Notification';
+import type { NotificationInstance } from './Notification';
 
-export type { NotifiactionProps } from './notifiaction';
-
-export { Notifiaction } from './notifiaction';
+export default useNotification;
+export { NotificationInstance };
