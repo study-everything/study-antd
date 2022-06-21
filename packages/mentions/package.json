@@ -1,5 +1,5 @@
 {
-	"name": "@study/notifiaction",
+	"name": "@study/mentions",
 	"main": "cjs/index.js",
 	"module": "esm/index.js",
 	"typings": "lib/index.d.ts",
@@ -7,7 +7,6 @@
 		"build": "gulp"
 	},
 	"devDependencies": {
-		"classnames": "^2.3.1",
 		"react": "^18.1.0"
 	},
 	"peerDependencies": {
@@ -17,7 +16,8 @@
 		"@study/style": "^1.0.0",
 		"@study/util": "^1.0.0",
 		"classname": "^0.0.0",
-		"rc-motion": "^2.6.0",
+		"rc-mentions": "^1.8.0",
+		"rc-select": "^14.1.5",
 		"tslib": "^2.4.0"
 	}
 }

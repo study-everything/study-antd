@@ -1,3 +1,6 @@
+import type { ButtonHTMLType, ButtonProps } from 'antd/es/button/button';
+import type { ButtonGroupProps } from 'antd/es/button/button-group';
+
 export const tuple = <T extends string[]>(...args: T) => args;
 
 const Placements = tuple(
@@ -58,4 +61,20 @@ export interface DropdownProps {
 
 export interface DropdownInterface extends React.FC<DropdownProps> {
   Button: any;
+}
+
+
+export type DropdownButtonType = 'default' | 'primary' | 'ghost' | 'dashed' | 'link' | 'text';
+
+export interface DropdownButtonProps extends ButtonGroupProps, DropdownProps {
+  type?: DropdownButtonType;
+  htmlType?: ButtonHTMLType;
+  disabled?: boolean;
+  loading?: ButtonProps['loading'];
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  icon?: React.ReactNode;
+  href?: string;
+  children?: React.ReactNode;
+  title?: string;
+  buttonsRender?: (buttons: React.ReactNode[]) => React.ReactNode[];
 }
