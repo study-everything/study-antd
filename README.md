@@ -32,7 +32,7 @@ $ pnpm -F @study/style build
 
 ## 5.开发进度
 - [ ] Button按钮
-- [ ] Icon图标
+- [x] Icon图标
 - [x] Typography排版
 - [ ] Divider分割线
 - [ ] Grid栅格
