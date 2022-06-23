@@ -1,15 +1,20 @@
 import * as React from 'react';
+import isVisible from 'rc-util/lib/Dom/isVisible';
 import classNames from 'classnames';
+import ResizeObserver from 'rc-resize-observer';
+import { getTargetScrollBarSize } from 'rc-util/lib/getScrollBarSize';
 import TableContext from './context/TableContext';
 import BodyContext from './context/BodyContext';
 import Body from './Body';
 import ColGroup from './ColGroup';
+import useStickyOffsets from './hooks/useStickyOffsets';
 import { getExpandableProps } from './utils/legacyUtil';
 import { findAllChildrenKeys, renderExpandIcon } from './utils/expandUtil';
 import ResizeContext from './context/ResizeContext';
 import { getPathValue, mergeObject, validateValue, getColumnsKey } from './utils/valueUtil';
 import Header from './Header/Header';
 import FixedHolder from './FixedHolder';
+import { getCellFixedInfo } from './utils/fixUtil';
 import type {
   GetRowKey,
   ColumnsType,
@@ -31,8 +36,9 @@ import type {
   TableSticky,
 } from './interface';
 import useColumns from './hooks/useColumns';
-import { useLayoutState } from './hooks/useFrame';
+import { useLayoutState, useTimeoutLock } from './hooks/useFrame';
 import ExpandedRowContext from './context/ExpandedRowContext';
+import StickyContext from './context/StickyContext';
 
 // Used for conditions cache
 const EMPTY_DATA = [];
@@ -95,6 +101,8 @@ export interface TableProps<RecordType = unknown>
   sticky?: boolean | TableSticky;
 }
 function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordType>) {
+  console.log(9999, 'start');
+
   const {
     prefixCls,
     className,
@@ -227,6 +235,7 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   );
 
   // ====================== Column ======================
+  const [componentWidth, setComponentWidth] = React.useState(0);
   const [columns, flattenColumns] = useColumns(
     {
       ...props,
@@ -252,14 +261,25 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   );
 
   // ====================== Scroll ======================
+
+  // 为了更新滚动条
+  const fullTableRef = React.useRef<HTMLDivElement>();
+  const scrollHeaderRef = React.useRef<HTMLDivElement>();
+  const scrollBodyRef = React.useRef<HTMLDivElement>();
+  const scrollSummaryRef = React.useRef<HTMLDivElement>();
+
+  const [pingedLeft, setPingedLeft] = React.useState(false); // 是否在容器范围内
+  const [pingedRight, setPingedRight] = React.useState(false); // 是否在容器范围内
   const [colsWidths, updateColsWidths] = useLayoutState(new Map<React.Key, number>());
 
   // Convert map to number width
   const colsKeys = getColumnsKey(flattenColumns);
   const pureColWidths = colsKeys.map(columnKey => colsWidths.get(columnKey));
   const colWidths = React.useMemo(() => pureColWidths, [pureColWidths.join('_')]);
-  const fixHeader = scroll && validateValue(scroll.y);
-  const horizonScroll = scroll && validateValue(scroll.x);
+  const stickyOffsets = useStickyOffsets(colWidths, flattenColumns.length);
+
+  const fixHeader = validateValue(scroll?.y);
+  const horizonScroll = validateValue(scroll?.x);
 
   // Scroll
   let scrollXStyle: React.CSSProperties;
@@ -274,14 +294,105 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   }
 
   if (horizonScroll) {
-    scrollYStyle = { overflow: 'auto' };
+    scrollXStyle = { overflow: 'auto' };
 
-    if (fixHeader) {
+    if (!fixHeader) {
       scrollYStyle = { overflowY: 'hidden' };
+    }
+
+    scrollTableStyle = {
+      width: scroll.x === true ? 'auto' : scroll?.x,
+      minWidth: '100%',
+    };
+  }
+
+  const onColumnResize = React.useCallback((columnKey: React.Key, width: number) => {
+    if (isVisible(fullTableRef.current)) {
+      updateColsWidths(widths => {
+        if (widths.get(columnKey) !== width) {
+          const newWidths = new Map(widths);
+          newWidths.set(columnKey, width);
+          return newWidths;
+        }
+        return widths;
+      });
+    }
+  }, []);
+
+  const [setScrollTarget, getScrollTarget] = useTimeoutLock(null);
+
+  function forceScroll(scrollLeft: number, target: HTMLDivElement | ((left: number) => void)) {
+    if (!target) return;
+    if (typeof target === 'function') {
+      target(scrollLeft);
+    } else if (target.scrollLeft !== scrollLeft) {
+      // eslint-disable-next-line no-param-reassign
+      target.scrollLeft = scrollLeft;
     }
   }
 
+  const onScroll = ({
+    currentTarget,
+    scrollLeft,
+  }: {
+    currentTarget: HTMLElement;
+    scrollLeft?: number;
+  }) => {
+    const mergedScrollLeft = typeof scrollLeft === 'number' ? scrollLeft : currentTarget.scrollLeft;
+    const compareTarget = currentTarget || EMPTY_SCROLL_TARGET;
+
+    if (!getScrollTarget() || getScrollTarget() === compareTarget) {
+      setScrollTarget(compareTarget);
+
+      // 更新滚动条
+      forceScroll(mergedScrollLeft, scrollHeaderRef.current);
+      forceScroll(mergedScrollLeft, scrollBodyRef.current);
+      forceScroll(mergedScrollLeft, scrollSummaryRef.current);
+      // forceScroll(mergedScrollLeft, scrollHeaderRef.current);
+    }
+
+    if (currentTarget) {
+      const { scrollWidth, clientWidth } = currentTarget;
+      if (scrollWidth === clientWidth) {
+        return;
+      }
+
+      // 这里先不考虑从右往左
+      setPingedLeft(mergedScrollLeft > 0);
+      setPingedRight(mergedScrollLeft < scrollWidth - clientWidth);
+    }
+  };
+
+  const triggerOnScroll = () => {
+    if (horizonScroll && scrollBodyRef.current) {
+      onScroll({ currentTarget: scrollBodyRef.current });
+    }
+  };
+
+  const onFullTableResize = ({ width }) => {
+    if (width !== componentWidth) {
+      triggerOnScroll();
+      setComponentWidth(fullTableRef.current ? fullTableRef.current.offsetWidth : width);
+    }
+  };
+
+  const mounted = React.useRef(false);
+  React.useEffect(() => {
+    if (mounted.current) {
+      triggerOnScroll();
+    }
+  }, [horizonScroll, data, columns.length]);
+  React.useEffect(() => {
+    mounted.current = true;
+  }, []);
+
   // ===================== Effects ======================
+  const [scrollbarSize, setScrollbarSize] = React.useState(0);
+  const [supportSticky, setSupportSticky] = React.useState(true);
+
+  React.useEffect(() => {
+    setScrollbarSize(getTargetScrollBarSize(scrollBodyRef.current).width);
+  }, []);
 
   // ================== INTERNAL HOOKS ==================
 
@@ -302,11 +413,11 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   // Header props
   const headerProps = {
     colWidths,
-    columCount: flattenColumns.length,
-    // stickyOffsets,
-    // onHeaderRow,
-    // fixHeader,
-    // scroll,
+    columnCount: flattenColumns.length,
+    stickyOffsets,
+    onHeaderRow,
+    fixHeader,
+    scroll,
   };
 
   // Empty
@@ -315,6 +426,7 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   const bodyTable = (
     <Body
       data={mergedData}
+      measureColumnWidth={fixHeader || horizonScroll}
       expandedKeys={mergedExpandedKeys}
       rowExpandable={rowExpandable}
       getRowKey={getRowKey}
@@ -329,20 +441,63 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   );
 
   let groupTableNode: React.ReactNode;
-  console.log('fixHeader', fixHeader);
+
   if (fixHeader) {
+    const bodyContent: React.ReactNode = (
+      <div
+        style={{
+          ...scrollXStyle,
+          ...scrollYStyle,
+        }}
+        onScroll={onScroll}
+        ref={scrollBodyRef}
+        className={classNames(`${prefixCls}-body`)}
+      >
+        <TableComponent
+          style={{
+            ...scrollTableStyle,
+            tableLayout: mergedTableLayout,
+          }}
+        >
+          {bodyColGroup}
+          {bodyTable}
+        </TableComponent>
+      </div>
+    );
+
+    const fixedHolderProps = {
+      ...headerProps,
+      ...columnContext,
+      onScroll,
+    };
+
     groupTableNode = (
       <>
-        {/* Header Table */}
-        {showHeader !== false && <FixedHolder></FixedHolder>}
-
-        {/* Body Table */}
+        {showHeader !== false && (
+          <FixedHolder
+            {...fixedHolderProps}
+            // stickyTopOffset={offsetHeader}
+            className={`${prefixCls}-header`}
+            ref={scrollHeaderRef}
+          >
+            {fixedHolderPassProps => <Header {...fixedHolderPassProps} />}
+          </FixedHolder>
+        )}
+        {bodyContent}
       </>
     );
   } else {
     groupTableNode = (
-      <div className={classNames(`${prefixCls}-content`)}>
-        <TableComponent style={{ tableLayout: mergedTableLayout }}>
+      <div
+        style={{
+          ...scrollXStyle,
+          ...scrollYStyle,
+        }}
+        className={classNames(`${prefixCls}-content`)}
+        onScroll={onScroll}
+        ref={scrollBodyRef}
+      >
+        <TableComponent style={{ ...scrollTableStyle, tableLayout: mergedTableLayout }}>
           {bodyColGroup}
           {showHeader !== false && <Header {...headerProps} {...columnContext} />}
           {bodyTable}
@@ -352,19 +507,41 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   }
 
   let fullTable = (
-    <div className={classNames(prefixCls)}>
+    <div
+      className={classNames(prefixCls, className, {
+        [`${prefixCls}-ping-left`]: pingedLeft, // 左侧阴影
+        [`${prefixCls}-ping-right`]: pingedRight,
+      })}
+      style={style}
+      ref={fullTableRef}
+    >
       <MemoTableContent>
         <div className={`${prefixCls}-container`}>{groupTableNode}</div>
       </MemoTableContent>
     </div>
   );
+  if (horizonScroll) {
+    fullTable = <ResizeObserver onResize={onFullTableResize}>{fullTable}</ResizeObserver>;
+  }
 
   const TableContextValue = React.useMemo(
     () => ({
       prefixCls,
       getComponent,
+      scrollbarSize,
+      fixedInfoList: flattenColumns.map((_, colIndex) =>
+        getCellFixedInfo(colIndex, colIndex, flattenColumns, stickyOffsets),
+      ),
     }),
-    [prefixCls],
+    [
+      prefixCls,
+      getComponent,
+      scrollbarSize,
+      flattenColumns,
+      stickyOffsets,
+      direction,
+      // isSticky,
+    ],
   );
 
   const BodyContextValue = React.useMemo(
@@ -398,17 +575,18 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   //   [componentWidth, fixHeader, fixColumn, horizonScroll],
   // );
 
-  const ResizeContextValue = {};
-  // console.log(1, 'TableContext', TableContextValue);
-  // console.log(2, 'BodyContextValue', BodyContextValue);
+  const ResizeContextValue = React.useMemo(() => ({ onColumnResize }), [onColumnResize]);
+
   return (
-    <TableContext.Provider value={TableContextValue}>
-      <BodyContext.Provider value={BodyContextValue}>
-        {/* <ExpandedRowContext.Provider value={ExpandedRowContextValue}> */}
-        <ResizeContext.Provider value={ResizeContextValue}>{fullTable}</ResizeContext.Provider>
-        {/* </ExpandedRowContext.Provider> */}
-      </BodyContext.Provider>
-    </TableContext.Provider>
+    <StickyContext.Provider value={supportSticky}>
+      <TableContext.Provider value={TableContextValue}>
+        <BodyContext.Provider value={BodyContextValue}>
+          {/* <ExpandedRowContext.Provider value={ExpandedRowContextValue}> */}
+          <ResizeContext.Provider value={ResizeContextValue}>{fullTable}</ResizeContext.Provider>
+          {/* </ExpandedRowContext.Provider> */}
+        </BodyContext.Provider>
+      </TableContext.Provider>
+    </StickyContext.Provider>
   );
 }
 

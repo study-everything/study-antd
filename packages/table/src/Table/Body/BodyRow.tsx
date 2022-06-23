@@ -49,7 +49,8 @@ function BodyRow<RecordType extends { children?: readonly RecordType[] }>(
     cellComponent,
     childrenColumnName,
   } = props;
-  const { prefixCls } = React.useContext(TableContext);
+  const { prefixCls, fixedInfoList } = React.useContext(TableContext);
+
   const {
     flattenColumns,
     expandableType,
@@ -94,7 +95,9 @@ function BodyRow<RecordType extends { children?: readonly RecordType[] }>(
     >
       {flattenColumns.map((column, colIndex) => {
         const { render, dataIndex, className: columnClassName } = column;
+
         const key = columnsKey[colIndex];
+        const fixedInfo = fixedInfoList[colIndex];
 
         // ============= Used for nest expandable =============
         let appendCellNode: React.ReactNode;
@@ -132,6 +135,7 @@ function BodyRow<RecordType extends { children?: readonly RecordType[] }>(
             render={render}
             component={cellComponent}
             expanded={appendCellNode}
+            {...fixedInfo}
             appendNode={appendCellNode}
             additionalProps={additionalCellProps}
           />

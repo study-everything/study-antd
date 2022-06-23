@@ -12,7 +12,7 @@ export interface TableContextProps {
 
   direction: 'ltr' | 'rtl';
 
-  // fixedInfoList: readonly FixedInfo[];
+  fixedInfoList: readonly FixedInfo[];
 
   isSticky: boolean;
 }

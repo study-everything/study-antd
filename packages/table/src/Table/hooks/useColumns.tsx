@@ -12,7 +12,6 @@ import type {
 } from '../interface';
 import { INTERNAL_COL_DEFINE } from '../utils/legacyUtil';
 import { EXPAND_COLUMN } from '../constant';
-import { spawn } from 'child_process';
 
 function flatColumns<RecordType>(columns: ColumnsType<RecordType>): ColumnType<RecordType>[] {
   return columns.reduce((list, column) => {
@@ -92,6 +91,13 @@ function useColumns<RecordType>(
       const prevColumn = baseColumns[expandColumnIndex];
 
       let fixedColumn: FixedType | null = null;
+      if ((fixed === 'left' || fixed) && !expandIconColumnIndex) {
+        fixedColumn = 'left';
+      } else if ((fixed === 'right' || fixed) && expandIconColumnIndex === baseColumns.length) {
+        fixedColumn = 'right';
+      } else {
+        fixedColumn = prevColumn ? prevColumn.fixed : null;
+      }
 
       const expandColumn = {
         [INTERNAL_COL_DEFINE]: {
