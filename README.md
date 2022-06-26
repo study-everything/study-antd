@@ -89,7 +89,7 @@ $ pnpm -F @study/style build
 - [ ] Notification通知提醒框
 - [x] Popconfirm气泡确认框
 - [ ] Progress进度条
-- [ ] Result结果
+- [x] Result结果
 - [ ] Skeleton骨架屏
 - [ ] Spin加载中
 - [ ] Anchor锚点
