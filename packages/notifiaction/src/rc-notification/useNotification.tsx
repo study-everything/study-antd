@@ -1,98 +1,171 @@
 import * as React from 'react';
-import type {
-  ICloseTask,
-  IFn,
-  INotificationAPI,
-  INotificationConfig,
-  INotificationsRef,
-  IOpenTask,
-  ITask,
-} from './types';
-import { INotificationTypes } from './types';
+import type { CSSMotionProps } from 'rc-motion';
+import Notifications from './Notifications';
+import type { Placement, NotificationsRef, OpenConfig } from './Notifications';
 
-// 此处表示默认的构造容器
-const getDefaultContainer: IFn<HTMLElement> = () => document.body;
-// 默认增长的主键
+const defaultGetContainer = () => document.body;
+
+type OptionalConfig = Partial<OpenConfig>;
+
+export interface NotificationConfig {
+  prefixCls?: string;
+  /** Customize container. It will repeat call which means you should return same container element. */
+  getContainer?: () => HTMLElement;
+  motion?: CSSMotionProps | ((placement: Placement) => CSSMotionProps);
+  closeIcon?: React.ReactNode;
+  closable?: boolean;
+  maxCount?: number;
+  duration?: number;
+  /** @private. Config for notification holder style. Safe to remove if refactor */
+  className?: (placement: Placement) => string;
+  /** @private. Config for notification holder style. Safe to remove if refactor */
+  style?: (placement: Placement) => React.CSSProperties;
+  /** @private Trigger when all the notification closed. */
+  onAllRemoved?: VoidFunction;
+}
+
+export interface NotificationAPI {
+  open: (config: OptionalConfig) => void;
+  close: (key: React.Key) => void;
+  destroy: () => void;
+}
+
+interface OpenTask {
+  type: 'open';
+  config: OpenConfig;
+}
+
+interface CloseTask {
+  type: 'close';
+  key: React.Key;
+}
+
+interface DestroyTask {
+  type: 'destroy';
+}
+
+type Task = OpenTask | CloseTask | DestroyTask;
+
 let uniqueKey = 0;
 
-// 默认导出的方法
-export default function useNotification(
-  rootConfig: INotificationConfig = {},
-): [INotificationAPI, React.ReactElement] {
-  const {
-    getContainer = getDefaultContainer,
-    prefixCls,
-    duration,
-    closeIcon,
-    closable,
-  } = rootConfig;
+function mergeConfig<T>(...objList: Partial<T>[]): T {
+  const clone: T = {} as T;
 
-  // 组成mergeConfig 为了以后的合并
-  const unMergeConfig = {duration, closeIcon, closable}
+  objList.forEach(obj => {
+    if (obj) {
+      Object.keys(obj).forEach(key => {
+        const val = obj[key];
 
-  // 设置root container
-  const [rootContainer, setRootContainer] = React.useState<HTMLElement>();
-  // 用来获取组件实例
-  const notificationRef = React.useRef<INotificationsRef>();
-  const contextHolder = (
-    <Notifications container={rootContainer} ref={notificationRef} prefixCls={prefixCls} />
-  );
-  // 执行弹框队列
-  const [taskQueue, setTaskQueue] = React.useState<ITask[]>([]);
-
-  // 获取最新的dom节点
-  React.useEffect(() => {
-    setRootContainer(getContainer());
+        if (val !== undefined) {
+          clone[key] = val;
+        }
+      });
+    }
   });
 
-  // 表示任务策略 不同的任务执行不同的事情
-  const taskStrategy: Record<INotificationTypes, IFn<void>> = {
-    [INotificationTypes.OPEN](task: IOpenTask) {
-      notificationRef.current.open(task.config);
-    },
-    [INotificationTypes.CLOSE](task: ICloseTask) {
-      notificationRef.current.close(task.key);
-    },
-    [INotificationTypes.DESTROY]() {
-      notificationRef.current.destroy();
-    },
-  };
-  // 监听队列 && 开始执行任务
-  React.useEffect(() => {
-    if (!notificationRef.current || !taskQueue.length) return;
+  return clone;
+}
 
-    taskQueue.forEach(task => {
-      if (taskStrategy[task.type]) {
-        taskStrategy[task.type](task);
-      }
-    });
+// 表示入口函数
+export default function useNotification(
+  rootConfig: NotificationConfig = {},
+): [NotificationAPI, React.ReactElement] {
+  const {
+    // 表示要挂载的容器节点
+    getContainer = defaultGetContainer,
+    motion,
+    // 表示组件共同前缀
+    prefixCls,
+    // 存在最大的个数
+    maxCount,
+    className,
+    style,
+    onAllRemoved,
+    ...shareConfig
+  } = rootConfig;
 
-    // 清空任务队列
-    setTaskQueue([]);
-  }, [taskQueue]);
+  const [container, setContainer] = React.useState<HTMLElement>();
+  // 表示组件实例 方便使用实例来调用open close destroy
+  const notificationsRef = React.useRef<NotificationsRef>();
 
-  // 设置返回的api
-  const Api = React.useMemo<INotificationAPI>(
+  // 表示需要渲染的组件
+  const contextHolder = (
+    <Notifications
+      container={container}
+      ref={notificationsRef}
+      prefixCls={prefixCls}
+      motion={motion}
+      maxCount={maxCount}
+      className={className}
+      style={style}
+      onAllRemoved={onAllRemoved}
+    />
+  );
+
+  // 多个消息弹框的 队列
+  const [taskQueue, setTaskQueue] = React.useState<Task[]>([]);
+
+  // ========================= Refs =========================
+  // 使用React.useMemo 进行缓存
+  const api = React.useMemo<NotificationAPI>(
     () => ({
-      open(config) {
-        const mergeConfig = Object.assign(unMergeConfig, config);
-        if (mergeConfig.key === null || mergeConfig.key === undefined) {
-          mergeConfig.key = `study-notification-${uniqueKey}`;
-          uniqueKey++;
+      open: config => {
+        const mergedConfig = mergeConfig(shareConfig, config);
+        // 设置key 一般都是用来删除的
+        if (mergedConfig.key === null || mergedConfig.key === undefined) {
+          mergedConfig.key = `rc-notification-${uniqueKey}`;
+          uniqueKey += 1;
         }
 
-        // 添加进去队列中
-        setTaskQueue(queue => [...queue, { type: INotificationTypes.OPEN, config: mergeConfig }]);
+        // 就是将所有的任务 都加入队列中 之后循环依次执行队列中的任务
+        setTaskQueue(queue => [...queue, { type: 'open', config: mergedConfig }]);
       },
-      close(key) {
-        setTaskQueue(queue => [...queue, { type: INotificationTypes.CLOSE, key }]);
+      close: key => {
+        setTaskQueue(queue => [...queue, { type: 'close', key }]);
       },
-      destroy() {
-        setTaskQueue(queue => [...queue, { type: INotificationTypes.DESTROY }]);
+      destroy: () => {
+        setTaskQueue(queue => [...queue, { type: 'destroy' }]);
       },
     }),
     [],
   );
 
-  return [Api, contextHolder];
+  // ======================= Container ======================
+  // React 18 should all in effect that we will check container in each render
+  // Which means getContainer should be stable.
+  React.useEffect(() => {
+    // 设置最新的dom节点
+    setContainer(getContainer());
+  });
+
+  // ======================== Effect ========================
+  // 监听队列 开始执行任务
+  React.useEffect(() => {
+    // Flush task when node ready
+    if (notificationsRef.current && taskQueue.length) {
+      taskQueue.forEach(task => {
+        switch (task.type) {
+          case 'open':
+            notificationsRef.current.open(task.config);
+            break;
+
+          case 'close':
+            notificationsRef.current.close(task.key);
+            break;
+
+          case 'destroy':
+            notificationsRef.current.destroy();
+            break;
+
+          default:
+            break;
+        }
+      });
+
+      setTaskQueue([]);
+    }
+  }, [taskQueue]);
+
+  // ======================== Return ========================
+  return [api, contextHolder];
 }

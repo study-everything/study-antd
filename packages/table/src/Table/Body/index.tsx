@@ -1,9 +1,12 @@
 import * as React from 'react';
 import BodyContext from '../context/BodyContext';
 import TableContext from '../context/TableContext';
+import { getColumnsKey } from '../utils/valueUtil';
 import type { GetRowKey, Key, GetComponentProps } from '../interface';
 import useFlattenRecords from '../hooks/useFlattenRecords';
 import BodyRow from './BodyRow';
+import ResizeContext from '../context/ResizeContext';
+import MeasureRow from './MeasureRow';
 
 export interface BodyProps<RecordType> {
   data: readonly RecordType[];
@@ -26,12 +29,13 @@ function Body<RecordType>({
   emptyNode,
   childrenColumnName,
 }: BodyProps<RecordType>) {
+  const { onColumnResize } = React.useContext(ResizeContext);
   const { prefixCls, getComponent } = React.useContext(TableContext);
   const { flattenColumns } = React.useContext(BodyContext);
   // console.log('flattenColumns', flattenColumns);
 
   const flattenData = useFlattenRecords(data, childrenColumnName, expandedKeys, getRowKey);
-  
+
   // ====================== Render ======================
   const bodyNode = React.useMemo(() => {
     const WrapperComponent = getComponent(['body', 'wrapper'], 'tbody');
@@ -40,7 +44,6 @@ function Body<RecordType>({
 
     let rows: React.ReactNode;
     if (data.length) {
-      // console.log('flattenData', flattenData);
       rows = flattenData.map((item, idx) => {
         const { record, indent, index: renderIndex } = item;
 
@@ -67,8 +70,22 @@ function Body<RecordType>({
     } else {
       rows = emptyNode;
     }
-    return <WrapperComponent className={`${prefixCls}-tbody`}>{rows}</WrapperComponent>;
-  }, [data, prefixCls, flattenData]);
+
+    const columnsKey = getColumnsKey(flattenColumns);
+    
+    return (
+      <WrapperComponent className={`${prefixCls}-tbody`}>
+        {measureColumnWidth && (
+          <MeasureRow
+            prefixCls={prefixCls}
+            columnsKey={columnsKey}
+            onColumnResize={onColumnResize}
+          />
+        )}
+        {rows}
+      </WrapperComponent>
+    );
+  }, [data, prefixCls, flattenData, onColumnResize]);
 
   return bodyNode;
 }

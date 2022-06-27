@@ -32,7 +32,7 @@ $ pnpm -F @study/style build
 
 ## 5.开发进度
 - [ ] Button按钮
-- [ ] Icon图标
+- [x] Icon图标
 - [x] Typography排版
 - [ ] Divider分割线
 - [ ] Grid栅格
@@ -69,7 +69,7 @@ $ pnpm -F @study/style build
 - [x] Carousel走马灯
 - [ ] Collapse折叠面板
 - [ ] Comment评论
-- [ ] Descriptions描述列表
+- [x] Descriptions描述列表
 - [x] Empty空状态
 - [ ] Image图片
 - [ ] List列表
@@ -89,7 +89,7 @@ $ pnpm -F @study/style build
 - [ ] Notification通知提醒框
 - [x] Popconfirm气泡确认框
 - [ ] Progress进度条
-- [ ] Result结果
+- [x] Result结果
 - [ ] Skeleton骨架屏
 - [ ] Spin加载中
 - [ ] Anchor锚点

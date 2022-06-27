@@ -11,6 +11,7 @@ import type {
   Key,
   GetRowKey,
 } from '../interface';
+import ExpandedRow from './ExpandedRow';
 
 export interface BodyRowProps<RecordType> {
   record: RecordType;
@@ -48,14 +49,19 @@ function BodyRow<RecordType extends { children?: readonly RecordType[] }>(
     cellComponent,
     childrenColumnName,
   } = props;
-  const { prefixCls } = React.useContext(TableContext);
+  const { prefixCls, fixedInfoList } = React.useContext(TableContext);
+
   const {
     flattenColumns,
-    expandIconColumnIndex,
     expandableType,
-    expandIcon,
+    expandRowByClick,
     onTriggerExpand,
+    rowClassName,
+    expandedRowClassName,
     indentSize,
+    expandIcon,
+    expandedRowRender,
+    expandIconColumnIndex,
   } = React.useContext(BodyContext);
 
   const [expandRended, setExpandRended] = React.useState(false);
@@ -89,7 +95,9 @@ function BodyRow<RecordType extends { children?: readonly RecordType[] }>(
     >
       {flattenColumns.map((column, colIndex) => {
         const { render, dataIndex, className: columnClassName } = column;
+
         const key = columnsKey[colIndex];
+        const fixedInfo = fixedInfoList[colIndex];
 
         // ============= Used for nest expandable =============
         let appendCellNode: React.ReactNode;
@@ -127,6 +135,7 @@ function BodyRow<RecordType extends { children?: readonly RecordType[] }>(
             render={render}
             component={cellComponent}
             expanded={appendCellNode}
+            {...fixedInfo}
             appendNode={appendCellNode}
             additionalProps={additionalCellProps}
           />
@@ -135,7 +144,39 @@ function BodyRow<RecordType extends { children?: readonly RecordType[] }>(
     </RowComponent>
   );
 
-  return baseRowNode;
+  // =========================== Expand Row ===========================
+  let expandRowNode: React.ReactElement;
+  if (rowSupportExpand && (expandRended || expanded)) {
+    const expandContent = expandedRowRender(record, index, indent + 1, expanded);
+
+    const computedExpandedRowClassName =
+      expandedRowClassName && expandedRowClassName(record, index, indent);
+
+    expandRowNode = (
+      <ExpandedRow
+        expanded={expanded}
+        className={classNames(
+          `${prefixCls}-expanded-row`,
+          `${prefixCls}-expanded-row-level-${indent + 1}`,
+          computedExpandedRowClassName,
+        )}
+        prefixCls={prefixCls}
+        component={RowComponent}
+        cellComponent={cellComponent}
+        colSpan={flattenColumns.length}
+        isEmpty={false}
+      >
+        {expandContent}
+      </ExpandedRow>
+    );
+  }
+
+  return (
+    <>
+      {baseRowNode}
+      {expandRowNode}
+    </>
+  );
 }
 
 BodyRow.displayName = 'BodyRow';

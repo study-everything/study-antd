@@ -9,6 +9,9 @@ import columnResize from './examples/column-resize';
 import dropdown from './examples/dropdown';
 import ellipsis from './examples/ellipsis';
 import ellipsisCustomTooltip from './examples/ellipsis-custom-tooltip';
+import expandIcon from './examples/expandIcon';
+import fixedColumns from './examples/fixedColumns';
+import scrollXY from './examples/scrollXY';
 
 storiesOf('Table', module)
   .add('Demo', Animation)
@@ -19,4 +22,7 @@ storiesOf('Table', module)
   .add('column-resize', columnResize)
   .add('dropdown', dropdown)
   .add('ellipsis', ellipsis)
-  .add('ellipsis-custom-tooltip', ellipsisCustomTooltip);
+  .add('ellipsis-custom-tooltip', ellipsisCustomTooltip)
+  .add('expandIcon', expandIcon)
+  .add('fixedColumns', fixedColumns)
+  .add('scrollXY', scrollXY)

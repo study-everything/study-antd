@@ -1,0 +1,25 @@
+{
+	"name": "@study/affix",
+	"main": "cjs/index.js",
+	"module": "esm/index.js",
+	"typings": "lib/index.d.ts",
+	"scripts": {
+		"build": "gulp"
+	},
+	"devDependencies": {
+		"react": "^18.1.0"
+	},
+	"peerDependencies": {
+		"react": "^18.1.0"
+	},
+	"dependencies": {
+		"@types/react": "^18.0.14",
+		"@study/style": "^1.0.0",
+		"@study/util": "^1.0.0",
+		"antd": "^4.21.0",
+		"classnames": "^2.3.1",
+		"tslib": "^2.4.0",
+		"rc-resize-observer": "^1.2.0",
+		"rc-util": "^5.22.5"
+	}
+}

@@ -11,6 +11,7 @@ import type {
   CellEllipsisType,
 } from '../interface';
 import { getPathValue, validateValue } from '../utils/valueUtil';
+import StickyContext from '../context/StickyContext';
 
 function isRenderCell(data) {
   return data && typeof data === 'object' && !Array.isArray(data) && !React.isValidElement(data);
@@ -91,6 +92,8 @@ function Cell<RecordType extends DefaultRecordType>(
 ): React.ReactElement {
   const cellPrefixCls = `${prefixCls}-cell`;
 
+  const supportSticky = React.useContext(StickyContext);
+
   // ==================== Child Node ====================
   const [childNode, legacyCellProps] = React.useMemo<
     [React.ReactNode, CellType<RecordType>] | [React.ReactNode]
@@ -143,9 +146,9 @@ function Cell<RecordType extends DefaultRecordType>(
     mergedChildNode = null;
   }
 
-  // if (ellipsis) {
-  //   mergedChildNode = <span className={`${cellPrefixCls}-content`}>{mergedChildNode}</span>;
-  // }
+  if (ellipsis) {
+    mergedChildNode = <span className={`${cellPrefixCls}-content`}>{mergedChildNode}</span>;
+  }
 
   const {
     colSpan: cellColSpan,
@@ -161,7 +164,19 @@ function Cell<RecordType extends DefaultRecordType>(
     return null;
   }
   // ====================== Fixed =======================
+  const fixedStyle: React.CSSProperties = {};
+  const isFixLeft = typeof fixLeft === 'number' && supportSticky;
+  const isFixRight = typeof fixRight === 'number' && supportSticky;
 
+  if (isFixLeft) {
+    fixedStyle.position = 'sticky';
+    fixedStyle.left = fixLeft;
+  }
+
+  if (isFixRight) {
+    fixedStyle.position = 'sticky';
+    fixedStyle.right = fixRight;
+  }
   // ====================== Align =======================
 
   // ====================== Hover =======================
@@ -178,12 +193,16 @@ function Cell<RecordType extends DefaultRecordType>(
       cellPrefixCls,
       className,
       {
+        [`${cellPrefixCls}-fix-left`]: isFixLeft && supportSticky,
+        [`${cellPrefixCls}-fix-left-last`]: lastFixLeft && supportSticky,
+        [`${cellPrefixCls}-fix-right`]: isFixRight && supportSticky,
+        [`${cellPrefixCls}-fix-right-first`]: firstFixRight && supportSticky,
         [`${cellPrefixCls}-ellipsis`]: ellipsis,
       },
       additionalProps.className,
       cellClassName,
     ),
-    style: { ...cellStyle },
+    style: { ...fixedStyle, ...cellStyle },
   };
   return (
     <Component {...componentProps}>

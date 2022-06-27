@@ -3,123 +3,200 @@ import { createPortal } from 'react-dom';
 import { CSSMotionList } from 'rc-motion';
 import type { CSSMotionProps } from 'rc-motion';
 import classNames from 'classnames';
-import type { INoticeConfig, INotificationsRef, IOpenConfig } from './types';
+import Notice from './Notice';
+import type { NoticeConfig } from './Notice';
 
-// ========================= 接口定义范围 =========================
+export interface OpenConfig extends NoticeConfig {
+  key: React.Key;
+  placement?: Placement;
+  content?: React.ReactNode;
+  duration?: number | null;
+}
+
 export interface NotificationsProps {
   prefixCls?: string;
-  container?: HTMLElement;
-  className: (placement: Placement) => string;
   motion?: CSSMotionProps | ((placement: Placement) => CSSMotionProps);
+  container?: HTMLElement;
+  maxCount?: number;
+  className?: (placement: Placement) => string;
+  style?: (placement: Placement) => React.CSSProperties;
+  onAllRemoved?: VoidFunction;
 }
-export type Placement = 'topRight';
-type Placements = Partial<Record<Placement, IOpenConfig[]>>;
 
-const Notifications = React.forwardRef<Required<INotificationsRef>, NotificationsProps>(
-  (props, ref) => {
-    const { prefixCls, container, motion, className } = props;
-    const [configList, setConfigList] = React.useState<IOpenConfig[]>([]);
-    const [placements, setPlacements] = React.useState<Placements>({});
+export type Placement = 'top' | 'topLeft' | 'topRight' | 'bottom' | 'bottomLeft' | 'bottomRight';
 
-    // 此方法是执行关闭方法的同时 触发onClose事件回调
-    const onNoticeClose = (key: React.Key) => {
-      const config = configList.find(item => item.key === key);
-      config?.onClose?.();
+type Placements = Partial<Record<Placement, OpenConfig[]>>;
 
-      setConfigList(list => list.filter(item => item.key !== key));
-    };
+export interface NotificationsRef {
+  open: (config: OpenConfig) => void;
+  close: (key: React.Key) => void;
+  destroy: () => void;
+}
 
-    // ========================= Refs =========================
-    React.useImperativeHandle(ref, () => ({
-      open: config => {
-        setConfigList(list => {
-          const clone = [...list];
+// ant-notification ant-notification-topRight
+const Notifications = React.forwardRef<NotificationsRef, NotificationsProps>((props, ref) => {
+  const {
+    prefixCls = 'rc-notification',
+    container,
+    motion,
+    maxCount,
+    className,
+    style,
+    onAllRemoved,
+  } = props;
+  const [configList, setConfigList] = React.useState<OpenConfig[]>([]);
 
-          const index = clone.findIndex(item => item.key === config.key);
-          if (index !== -1) {
-            clone[index] = config;
-          } else {
-            clone.push(config);
-          }
+  // ======================== Close =========================
+  // 表示关闭弹框
+  const onNoticeClose = (key: React.Key) => {
+    // Trigger close event
+    const config = configList.find((item) => item.key === key);
+    // 执行关闭的回调函数
+    config?.onClose?.();
 
-          return clone;
-        });
-      },
-      close: onNoticeClose,
-      destroy: () => {
-        setConfigList([]);
-      },
-    }));
+    setConfigList((list) => list.filter((item) => item.key !== key));
+  };
 
-    React.useEffect(() => {
-      const nextPlacements: Placements = {};
+  // ========================= Refs =========================
+  React.useImperativeHandle(ref, () => ({
+    open: (config) => {
+      setConfigList((list) => {
+        let clone = [...list];
 
-      configList.forEach(config => {
-        const { placement } = config;
-
-        if (placement) {
-          nextPlacements[placement] = nextPlacements[placement] || [];
-          nextPlacements[placement].push(config);
+        // Replace if exist
+        const index = clone.findIndex((item) => item.key === config.key);
+        if (index >= 0) {
+          clone[index] = config;
+        } else {
+          clone.push(config);
         }
+
+        if (maxCount > 0 && clone.length > maxCount) {
+          clone = clone.slice(-maxCount);
+        }
+
+        return clone;
       });
+    },
+    close: (key) => {
+      onNoticeClose(key);
+    },
+    destroy: () => {
+      setConfigList([]);
+    },
+  }));
 
-      Object.keys(placements).forEach(keyName => {
-        nextPlacements[keyName] = nextPlacements[keyName] || [];
-      });
+  // ====================== Placements ======================
+  const [placements, setPlacements] = React.useState<Placements>({});
 
-      setPlacements(nextPlacements);
-    }, [configList]);
+  React.useEffect(() => {
+    const nextPlacements: Placements = {};
 
-    if (!container) return null;
+    configList.forEach((config) => {
+      const { placement = 'topRight' } = config;
 
-    const placementList = Object.keys(placements) as Placement[];
+      if (placement) {
+        nextPlacements[placement] = nextPlacements[placement] || [];
+        nextPlacements[placement].push(config);
+      }
+    });
 
-    return createPortal(
-      <>
-        {placementList.map(placement => {
-          const placementConfigList = placements[placement];
-          const keys = placementConfigList.map(config => ({
-            config,
-            key: config.key,
-          }));
+    // Fill exist placements to avoid empty list causing remove without motion
+    Object.keys(placements).forEach((placement) => {
+      nextPlacements[placement] = nextPlacements[placement] || [];
+    });
 
-          const placementMotion = typeof motion === 'function' ? motion(placement) : motion;
+    setPlacements(nextPlacements);
+  }, [configList]);
 
-          return (
-            <CSSMotionList
-              key={placement}
-              className={classNames(prefixCls, `${prefixCls}-${placement}`, className?.(placement))}
-              keys={keys}
-              motionAppear
-              {...placementMotion}
-            >
-              {({ config, className: motionClassName, style: motionStyle }, nodeRef) => {
-                const { key } = config as IOpenConfig;
-                const { className: configClassName, style: configStyle } = config as INoticeConfig;
-  
-                return (
-                  <Notice
-                    {...config}
-                    ref={nodeRef}
-                    prefixCls={prefixCls}
-                    className={classNames(motionClassName, configClassName)}
-                    style={{
-                      ...motionStyle,
-                      ...configStyle,
-                    }}
-                    key={key}
-                    eventKey={key}
-                    onNoticeClose={onNoticeClose}
-                  />
-                );
-              }}
-            </CSSMotionList>
-          );
-        })}
-      </>,
-      container,
-    );
-  },
-);
+  // Clean up container if all notices fade out
+  const onAllNoticeRemoved = (placement: Placement) => {
+    setPlacements((originPlacements) => {
+      const clone = {
+        ...originPlacements,
+      };
+      const list = clone[placement] || [];
+
+      if (!list.length) {
+        delete clone[placement];
+      }
+
+      return clone;
+    });
+  };
+
+  // Effect tell that placements is empty now
+  const emptyRef = React.useRef(false);
+  React.useEffect(() => {
+    if (Object.keys(placements).length > 0) {
+      emptyRef.current = true;
+    } else if (emptyRef.current) {
+      // Trigger only when from exist to empty
+      onAllRemoved?.();
+      emptyRef.current = false;
+    }
+  }, [placements]);
+
+  // ======================== Render ========================
+  if (!container) {
+    return null;
+  }
+
+  const placementList = Object.keys(placements) as Placement[];
+
+  return createPortal(
+    <>
+      {placementList.map((placement) => {
+        const placementConfigList = placements[placement];
+        const keys = placementConfigList.map((config) => ({
+          config,
+          key: config.key,
+        }));
+
+        const placementMotion = typeof motion === 'function' ? motion(placement) : motion;
+
+        return (
+          <CSSMotionList
+            key={placement}
+            className={classNames(prefixCls, `${prefixCls}-${placement}`, className?.(placement))}
+            style={style?.(placement)}
+            keys={keys}
+            motionAppear
+            {...placementMotion}
+            onAllRemoved={() => {
+              onAllNoticeRemoved(placement);
+            }}
+          >
+            {({ config, className: motionClassName, style: motionStyle }, nodeRef) => {
+              const { key } = config as OpenConfig;
+              const { className: configClassName, style: configStyle } = config as NoticeConfig;
+
+              return (
+                <Notice
+                  {...config}
+                  ref={nodeRef}
+                  prefixCls={prefixCls}
+                  className={classNames(motionClassName, configClassName)}
+                  style={{
+                    ...motionStyle,
+                    ...configStyle,
+                  }}
+                  key={key}
+                  eventKey={key}
+                  onNoticeClose={onNoticeClose}
+                />
+              );
+            }}
+          </CSSMotionList>
+        );
+      })}
+    </>,
+    container,
+  );
+});
+
+if (process.env.NODE_ENV !== 'production') {
+  Notifications.displayName = 'Notifications';
+}
 
 export default Notifications;

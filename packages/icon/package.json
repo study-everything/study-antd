@@ -1,0 +1,24 @@
+{
+	"name": "@study/icon",
+	"main": "cjs/index.js",
+	"module": "esm/index.js",
+	"typings": "lib/index.d.ts",
+	"scripts": {
+		"build": "gulp"
+	},
+	"devDependencies": {
+		"react": "^18.1.0"
+	},
+	"peerDependencies": {
+		"react": "^18.1.0"
+	},
+	"dependencies": {
+		"@ant-design/colors": "^6.0.0",
+		"@ant-design/icons-svg": "^4.2.1",
+		"@study/style": "^1.0.0",
+		"@study/util": "^1.0.0",
+		"classname": "^0.0.0",
+		"styled-components": "^5.3.5",
+		"tslib": "^2.4.0"
+	}
+}

@@ -1,0 +1,14 @@
+// GENERATE BY ./scripts/generate.ts
+// DON NOT EDIT IT MANUALLY
+
+import * as React from 'react'
+import FieldBinaryOutlinedSvg from '@ant-design/icons-svg/lib/asn/FieldBinaryOutlined';
+import StudyIcon, { AntdIconProps } from '../components/StudyIcon';
+
+const FieldBinaryOutlined = (
+  props: AntdIconProps,
+  ref: React.MutableRefObject<HTMLSpanElement>,
+) => <StudyIcon {...props} ref={ref} icon={FieldBinaryOutlinedSvg} />;
+
+FieldBinaryOutlined.displayName = 'FieldBinaryOutlined';
+export default React.forwardRef<HTMLSpanElement, AntdIconProps>(FieldBinaryOutlined);
