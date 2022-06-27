@@ -8,7 +8,7 @@ $ pnpm install
 
 ## 2. 执行 style、util 构建
 
-```
+```bash
 $ pnpm run build --filter @study/style
 $ pnpm run build --filter @study/util
 ```
@@ -20,12 +20,12 @@ $ npm run create:ts
 ```
 ### 创建 js 项目
 
-```
+```bash
 $ npm run create:js
 ```
 
 ## 4. 如果遇到cannot resolve @study/util 或者 @study/style 这类的问题，在根目录下
-```
+```bash
 $ pnpm -F @study/util build
 $ pnpm -F @study/style build
 ```
@@ -65,7 +65,7 @@ $ pnpm -F @study/style build
 - [x] Avatar头像
 - [ ] Badge徽标数
 - [ ] Calendar日历
-- [ ] Card卡片
+- [x] Card卡片
 - [x] Carousel走马灯
 - [ ] Collapse折叠面板
 - [ ] Comment评论

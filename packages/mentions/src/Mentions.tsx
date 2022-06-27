@@ -8,7 +8,7 @@ import { ConfigContext } from 'antd/es/config-provider';
 import { FormItemInputContext } from 'antd/es/form/context';
 import type { InputStatus } from 'antd/es/_util/statusUtils';
 import { getMergedStatus, getStatusClassNames } from 'antd/es/_util/statusUtils';
-import defaultRenderEmpty from 'antd/es/config-provider/defaultRenderEmpty';
+import defaultRenderEmpty from 'antd';
 
 export const { Option } = RcMentions;
 function loadingFilterOption() {
