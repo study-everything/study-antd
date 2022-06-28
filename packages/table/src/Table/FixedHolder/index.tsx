@@ -112,14 +112,18 @@ const FixedHolder = React.forwardRef<HTMLDivElement, FixedHeaderProps<unknown>>(
         isSticky,
       };
     }, [combinationScrollBarSize, stickyOffsets, isSticky]);
+    console.log('isSticky', isSticky);
 
     return (
       <div
         style={{
           overflow: 'hidden',
+          ...(isSticky ? { top: stickyTopOffset, bottom: stickyBottomOffset } : {}),
         }}
         ref={setScrollRef}
-        className={classNames(className)}
+        className={classNames(className, {
+          [stickyClassName]: !!stickyClassName,
+        })}
       >
         <table
           style={{

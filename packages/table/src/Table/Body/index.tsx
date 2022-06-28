@@ -7,6 +7,7 @@ import useFlattenRecords from '../hooks/useFlattenRecords';
 import BodyRow from './BodyRow';
 import ResizeContext from '../context/ResizeContext';
 import MeasureRow from './MeasureRow';
+import ExpandedRow from './ExpandedRow';
 
 export interface BodyProps<RecordType> {
   data: readonly RecordType[];
@@ -32,7 +33,6 @@ function Body<RecordType>({
   const { onColumnResize } = React.useContext(ResizeContext);
   const { prefixCls, getComponent } = React.useContext(TableContext);
   const { flattenColumns } = React.useContext(BodyContext);
-  // console.log('flattenColumns', flattenColumns);
 
   const flattenData = useFlattenRecords(data, childrenColumnName, expandedKeys, getRowKey);
 
@@ -68,11 +68,23 @@ function Body<RecordType>({
         );
       });
     } else {
-      rows = emptyNode;
+      rows = (
+        <ExpandedRow
+          expanded
+          className={`${prefixCls}-placeholder`}
+          prefixCls={prefixCls}
+          component={trComponent}
+          cellComponent={tdComponent}
+          colSpan={flattenColumns.length}
+          isEmpty
+        >
+          {emptyNode}
+        </ExpandedRow>
+      );
     }
 
     const columnsKey = getColumnsKey(flattenColumns);
-    
+
     return (
       <WrapperComponent className={`${prefixCls}-tbody`}>
         {measureColumnWidth && (

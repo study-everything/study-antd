@@ -12,6 +12,9 @@ import ellipsisCustomTooltip from './examples/ellipsis-custom-tooltip';
 import expandIcon from './examples/expandIcon';
 import fixedColumns from './examples/fixedColumns';
 import scrollXY from './examples/scrollXY';
+import noData from './examples/no-data';
+import stickyHeaderAndSummary from './examples/stickyHeaderAndSummary';
+import titleAndFooter from './examples/title-and-footer';
 
 storiesOf('Table', module)
   .add('Demo', Animation)
@@ -26,3 +29,6 @@ storiesOf('Table', module)
   .add('expandIcon', expandIcon)
   .add('fixedColumns', fixedColumns)
   .add('scrollXY', scrollXY)
+  .add('noData', noData)
+  .add('stickyHeaderAndSummary', stickyHeaderAndSummary)
+  .add('titleAndFooter', titleAndFooter);

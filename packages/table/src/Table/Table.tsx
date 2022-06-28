@@ -7,6 +7,8 @@ import TableContext from './context/TableContext';
 import BodyContext from './context/BodyContext';
 import Body from './Body';
 import ColGroup from './ColGroup';
+import Panel from './Panel';
+import Footer, { FooterComponents } from './Footer';
 import useStickyOffsets from './hooks/useStickyOffsets';
 import { getExpandableProps } from './utils/legacyUtil';
 import { findAllChildrenKeys, renderExpandIcon } from './utils/expandUtil';
@@ -15,6 +17,7 @@ import { getPathValue, mergeObject, validateValue, getColumnsKey } from './utils
 import Header from './Header/Header';
 import FixedHolder from './FixedHolder';
 import { getCellFixedInfo } from './utils/fixUtil';
+import useSticky from './hooks/useSticky';
 import type {
   GetRowKey,
   ColumnsType,
@@ -267,7 +270,6 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   const scrollHeaderRef = React.useRef<HTMLDivElement>();
   const scrollBodyRef = React.useRef<HTMLDivElement>();
   const scrollSummaryRef = React.useRef<HTMLDivElement>();
-
   const [pingedLeft, setPingedLeft] = React.useState(false); // 是否在容器范围内
   const [pingedRight, setPingedRight] = React.useState(false); // 是否在容器范围内
   const [colsWidths, updateColsWidths] = useLayoutState(new Map<React.Key, number>());
@@ -277,9 +279,15 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   const pureColWidths = colsKeys.map(columnKey => colsWidths.get(columnKey));
   const colWidths = React.useMemo(() => pureColWidths, [pureColWidths.join('_')]);
   const stickyOffsets = useStickyOffsets(colWidths, flattenColumns.length);
-
   const fixHeader = validateValue(scroll?.y);
   const horizonScroll = validateValue(scroll?.x);
+
+  // Sticky
+  const { isSticky, offsetHeader, offsetSummary, offsetScroll, stickyClassName, container } =
+    useSticky(sticky, prefixCls);
+
+  // footer
+  const summaryNode = summary?.(mergedData);
 
   // Scroll
   let scrollXStyle: React.CSSProperties;
@@ -421,7 +429,18 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   };
 
   // Empty
-  const emptyNode = null;
+  const emptyNode = React.useMemo(() => {
+    if (hasData) {
+      return null;
+    }
+
+    if (typeof emptyText === 'function') {
+      return emptyText();
+    }
+
+    return emptyText;
+  }, [hasData, emptyText]);
+
   // Body
   const bodyTable = (
     <Body
@@ -442,7 +461,7 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
 
   let groupTableNode: React.ReactNode;
 
-  if (fixHeader) {
+  if (fixHeader || isSticky) {
     const bodyContent: React.ReactNode = (
       <div
         style={{
@@ -466,8 +485,10 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     );
 
     const fixedHolderProps = {
+      noData: !mergedData.length,
       ...headerProps,
       ...columnContext,
+      stickyClassName,
       onScroll,
     };
 
@@ -476,7 +497,7 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
         {showHeader !== false && (
           <FixedHolder
             {...fixedHolderProps}
-            // stickyTopOffset={offsetHeader}
+            stickyTopOffset={offsetHeader}
             className={`${prefixCls}-header`}
             ref={scrollHeaderRef}
           >
@@ -501,6 +522,11 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
           {bodyColGroup}
           {showHeader !== false && <Header {...headerProps} {...columnContext} />}
           {bodyTable}
+          {summaryNode && (
+            <Footer stickyOffsets={stickyOffsets} flattenColumns={flattenColumns}>
+              {summaryNode}
+            </Footer>
+          )}
         </TableComponent>
       </div>
     );
@@ -516,7 +542,9 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
       ref={fullTableRef}
     >
       <MemoTableContent>
+        {title && <Panel className={`${prefixCls}-title`}>{title(mergedData)}</Panel>}
         <div className={`${prefixCls}-container`}>{groupTableNode}</div>
+        {footer && <Panel className={`${prefixCls}-footer`}>{footer(mergedData)}</Panel>}
       </MemoTableContent>
     </div>
   );
@@ -529,19 +557,13 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
       prefixCls,
       getComponent,
       scrollbarSize,
+      direction,
       fixedInfoList: flattenColumns.map((_, colIndex) =>
         getCellFixedInfo(colIndex, colIndex, flattenColumns, stickyOffsets),
       ),
+      isSticky,
     }),
-    [
-      prefixCls,
-      getComponent,
-      scrollbarSize,
-      flattenColumns,
-      stickyOffsets,
-      direction,
-      // isSticky,
-    ],
+    [prefixCls, getComponent, scrollbarSize, flattenColumns, stickyOffsets, direction, isSticky],
   );
 
   const BodyContextValue = React.useMemo(
@@ -589,6 +611,8 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     </StickyContext.Provider>
   );
 }
+
+Table.Summary = FooterComponents;
 
 Table.defaultProps = {
   rowKey: 'key',

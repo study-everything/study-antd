@@ -31,7 +31,7 @@ function ExpandedRow({
     let contentNode = children;
 
     // if(isEmpty ? horizon)
-
+    
     return (
       <Component
         className={className}
