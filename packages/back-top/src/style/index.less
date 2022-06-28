@@ -1,0 +1,43 @@
+@import '~@study/style/src/themes/index.less';
+@import '~@study/style/src/mixins/index.less';
+
+@backtop-prefix-cls: ~'@{ant-prefix}-back-top';
+
+.@{backtop-prefix-cls} {
+  .reset-component();
+
+  position: fixed;
+  right: 100px;
+  bottom: 50px;
+  z-index: @zindex-back-top;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+
+  &:empty {
+    display: none;
+  }
+
+  &-content {
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    color: @back-top-color;
+    text-align: center;
+    background-color: @back-top-bg;
+    border-radius: 20px;
+    transition: all 0.3s;
+
+    &:hover {
+      background-color: @back-top-hover-bg;
+      transition: all 0.3s;
+    }
+  }
+
+  &-icon {
+    font-size: 24px;
+    line-height: 40px;
+  }
+}
+
+@import './responsive.less';
