@@ -112,7 +112,6 @@ const FixedHolder = React.forwardRef<HTMLDivElement, FixedHeaderProps<unknown>>(
         isSticky,
       };
     }, [combinationScrollBarSize, stickyOffsets, isSticky]);
-    console.log('isSticky', isSticky);
 
     return (
       <div

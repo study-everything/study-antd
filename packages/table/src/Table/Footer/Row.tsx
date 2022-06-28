@@ -1,5 +1,11 @@
 import * as React from 'react';
 
-export default function FooterRow() {
-  return 'FooterRow';
+export interface FooterRowProps {
+  children?: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export default function FooterRow({ children, ...props }: FooterRowProps) {
+  return <tr {...props}>{children}</tr>;
 }

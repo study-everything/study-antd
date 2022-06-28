@@ -25,13 +25,29 @@ function ExpandedRow({
   colSpan,
   isEmpty,
 }: ExpandedRowProps) {
-  // const {} = React.useContext(TableContext);
-  // const {} = React.useContext(ExpandedRowContext);
+  const { scrollbarSize } = React.useContext(TableContext);
+  const { fixHeader, fixColumn, componentWidth, horizonScroll } =
+    React.useContext(ExpandedRowContext);
+
   return React.useMemo(() => {
     let contentNode = children;
 
-    // if(isEmpty ? horizon)
-    
+    if (isEmpty ? horizonScroll : fixColumn) {
+      contentNode = (
+        <div
+          style={{
+            width: componentWidth - (fixHeader ? scrollbarSize : 0),
+            position: 'sticky',
+            left: 0,
+            overflow: 'hidden',
+          }}
+          className={`${prefixCls}-expanded-row-fixed`}
+        >
+          {contentNode}
+        </div>
+      );
+    }
+
     return (
       <Component
         className={className}
@@ -51,11 +67,11 @@ function ExpandedRow({
     expanded,
     colSpan,
     isEmpty,
-    // scrollbarSize,
-    // componentWidth,
-    // fixColumn,
-    // fixHeader,
-    // horizonScroll,
+    scrollbarSize,
+    componentWidth,
+    fixColumn,
+    fixHeader,
+    horizonScroll,
   ]);
 }
 export default ExpandedRow;

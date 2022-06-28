@@ -9,6 +9,7 @@ import Body from './Body';
 import ColGroup from './ColGroup';
 import Panel from './Panel';
 import Footer, { FooterComponents } from './Footer';
+import Summary from './Footer/Summary';
 import useStickyOffsets from './hooks/useStickyOffsets';
 import { getExpandableProps } from './utils/legacyUtil';
 import { findAllChildrenKeys, renderExpandIcon } from './utils/expandUtil';
@@ -279,15 +280,27 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   const pureColWidths = colsKeys.map(columnKey => colsWidths.get(columnKey));
   const colWidths = React.useMemo(() => pureColWidths, [pureColWidths.join('_')]);
   const stickyOffsets = useStickyOffsets(colWidths, flattenColumns.length);
-  const fixHeader = validateValue(scroll?.y);
+  const fixHeader = validateValue(scroll?.y); // 是否支持纵向滚动条
   const horizonScroll = validateValue(scroll?.x);
+  const fixColumn = horizonScroll && flattenColumns.some(({ fixed }) => fixed);
 
   // Sticky
+  /**
+   * isSticky 是否粘性布局
+   */
   const { isSticky, offsetHeader, offsetSummary, offsetScroll, stickyClassName, container } =
     useSticky(sticky, prefixCls);
 
   // footer
   const summaryNode = summary?.(mergedData);
+  console.log(123, summaryNode);
+  
+  //
+  const fixFooter =
+    (fixHeader || isSticky) &&
+    React.isValidElement(summaryNode) &&
+    summaryNode.type === Summary &&
+    summaryNode.props.fixed;
 
   // Scroll
   let scrollXStyle: React.CSSProperties;
@@ -480,6 +493,11 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
         >
           {bodyColGroup}
           {bodyTable}
+          {!fixFooter && summaryNode && (
+            <Footer stickyOffsets={stickyOffsets} flattenColumns={flattenColumns}>
+              {summaryNode}
+            </Footer>
+          )}
         </TableComponent>
       </div>
     );
@@ -501,10 +519,29 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
             className={`${prefixCls}-header`}
             ref={scrollHeaderRef}
           >
-            {fixedHolderPassProps => <Header {...fixedHolderPassProps} />}
+            {fixedHolderPassProps => (
+              <>
+                <Header {...fixedHolderPassProps} />
+                {fixFooter === 'top' && <Footer {...fixedHolderPassProps}>{summaryNode}</Footer>}
+              </>
+            )}
           </FixedHolder>
         )}
+
+        {/* Body Table */}
         {bodyContent}
+
+        {/* Summary Table */}
+        {fixFooter && fixFooter !== 'top' && (
+          <FixedHolder
+            {...fixedHolderProps}
+            stickyTopOffset={offsetHeader}
+            className={`${prefixCls}-summary`}
+            ref={scrollSummaryRef}
+          >
+            {fixedHolderPassProps => <Footer {...fixedHolderPassProps}>{summaryNode}</Footer>}
+          </FixedHolder>
+        )}
       </>
     );
   } else {
@@ -587,15 +624,15 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     ],
   );
 
-  // const ExpandedRowContextValue = React.useMemo(
-  //   () => ({
-  //     componentWidth,
-  //     fixHeader,
-  //     fixColumn,
-  //     horizonScroll,
-  //   }),
-  //   [componentWidth, fixHeader, fixColumn, horizonScroll],
-  // );
+  const ExpandedRowContextValue = React.useMemo(
+    () => ({
+      componentWidth,
+      fixHeader,
+      fixColumn,
+      horizonScroll,
+    }),
+    [componentWidth, fixHeader, fixColumn, horizonScroll],
+  );
 
   const ResizeContextValue = React.useMemo(() => ({ onColumnResize }), [onColumnResize]);
 
@@ -603,9 +640,9 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     <StickyContext.Provider value={supportSticky}>
       <TableContext.Provider value={TableContextValue}>
         <BodyContext.Provider value={BodyContextValue}>
-          {/* <ExpandedRowContext.Provider value={ExpandedRowContextValue}> */}
-          <ResizeContext.Provider value={ResizeContextValue}>{fullTable}</ResizeContext.Provider>
-          {/* </ExpandedRowContext.Provider> */}
+          <ExpandedRowContext.Provider value={ExpandedRowContextValue}>
+            <ResizeContext.Provider value={ResizeContextValue}>{fullTable}</ResizeContext.Provider>
+          </ExpandedRowContext.Provider>
         </BodyContext.Provider>
       </TableContext.Provider>
     </StickyContext.Provider>
