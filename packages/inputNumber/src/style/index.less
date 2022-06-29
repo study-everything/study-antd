@@ -1,0 +1,97 @@
+@import '~@study/style/src/themes/index.less';
+@import '~@study/style/src/mixins/index.less';
+
+@prefix: ~'@{ant-prefix}';
+
+.ant-input-number {
+  display: inline-block;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  line-height: 26px;
+  vertical-align: middle;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  transition: all 0.3s;
+
+  &-focused {
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  }
+
+  &:hover {
+    border-color: #1890ff;
+  }
+
+  &-disable {
+    border-color: #d9d9d9;
+  }
+
+  &-input  {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    color: #666666;
+    line-height: 26px;
+    text-align: center;
+    border: 0;
+    border-radius: 4px;
+    outline: 0;
+    transition: all 0.3s ease;
+    transition: all 0.3s;
+    -moz-appearance: textfield;
+  }
+
+  &-handler {
+    display: block;
+    height: 12px;
+    overflow: hidden;
+    line-height: 12px;
+    text-align: center;
+    touch-action: none;
+  }
+  
+  &-handler-wrap {
+    float: right;
+    width: 20px;
+    height: 100%;
+    border-left: 1px solid #d9d9d9;
+    transition: all 0.3s;
+    // border-color: #1890ff
+  }
+
+  &-handler-up {
+    padding-top: 1px;
+    border-bottom: 1px solid #d9d9d9;
+    transition: all 0.3s;
+  }
+
+  &-handler-down {
+    transition: all 0.3s;
+  }
+
+  &-handler-up-inner {
+    &::after {
+      content: '+';
+    }
+  }
+
+  &-handler-up-down-inner {
+    &::after {
+      content: '-';
+    }
+  }
+
+  &-handler-up-inner, &-handler-up-down-inner {
+    color: #666;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  &-input-wrap {
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
