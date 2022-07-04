@@ -1,5 +1,5 @@
 import React from 'react';
-import Table from 'rc-table';
+import Table from '../Table';
 import { useCheckbox } from './utils/useInput';
 // import type { ColumnType } from '@/interface';
 

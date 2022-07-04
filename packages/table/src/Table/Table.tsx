@@ -1,14 +1,20 @@
 import * as React from 'react';
 import isVisible from 'rc-util/lib/Dom/isVisible';
 import classNames from 'classnames';
+import shallowEqual from 'shallowequal';
 import ResizeObserver from 'rc-resize-observer';
+import pickAttrs from 'rc-util/lib/pickAttrs';
 import { getTargetScrollBarSize } from 'rc-util/lib/getScrollBarSize';
+import ColumnGroup from './sugar/ColumnGroup';
+import Column from './sugar/Column';
+import { isStyleSupport } from 'rc-util/lib/Dom/styleChecker';
 import TableContext from './context/TableContext';
 import BodyContext from './context/BodyContext';
 import Body from './Body';
 import ColGroup from './ColGroup';
 import Panel from './Panel';
 import Footer, { FooterComponents } from './Footer';
+import StickyScrollBar from './stickyScrollBar';
 import Summary from './Footer/Summary';
 import useStickyOffsets from './hooks/useStickyOffsets';
 import { getExpandableProps } from './utils/legacyUtil';
@@ -43,6 +49,7 @@ import useColumns from './hooks/useColumns';
 import { useLayoutState, useTimeoutLock } from './hooks/useFrame';
 import ExpandedRowContext from './context/ExpandedRowContext';
 import StickyContext from './context/StickyContext';
+import { EXPAND_COLUMN } from './constant';
 
 // Used for conditions cache
 const EMPTY_DATA = [];
@@ -60,6 +67,15 @@ interface MemoTableContentProps {
 
 const MemoTableContent = React.memo<MemoTableContentProps>(
   ({ children }) => children as React.ReactElement,
+  (prev, next) => {
+    if (!shallowEqual(prev.props, next.props)) {
+      return false;
+    }
+
+    // No additional render when pinged status change.
+    // This is not a bug.
+    return prev.pingLeft !== next.pingLeft || prev.pingRight !== next.pingRight;
+  },
 );
 export interface TableProps<RecordType = unknown>
   extends Omit<LegacyExpandableProps<RecordType>, 'showExpandColumn'> {
@@ -68,7 +84,7 @@ export interface TableProps<RecordType = unknown>
   style?: React.CSSProperties;
   children?: React.ReactNode;
   data?: readonly RecordType[];
-  columns?: ColumnsType<RecordType>[];
+  columns?: ColumnsType<RecordType>;
   rowKey?: string | GetRowKey<RecordType>;
   tableLayout?: TableLayout;
 
@@ -105,8 +121,6 @@ export interface TableProps<RecordType = unknown>
   sticky?: boolean | TableSticky;
 }
 function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordType>) {
-  console.log(9999, 'start');
-
   const {
     prefixCls,
     className,
@@ -189,7 +203,11 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
       return 'row';
     }
 
+    // 这里暂且先放一放
     if (
+      (props.expandable &&
+        internalHooks === INTERNAL_HOOKS &&
+        (props.expandable as any).__PARENT_RENDER_ICON__) ||
       mergedData.some(
         record => record && typeof record === 'object' && record[mergedChildrenColumnName],
       )
@@ -253,7 +271,7 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
       expandIconColumnIndex,
       direction,
     },
-    null,
+    internalHooks === INTERNAL_HOOKS ? transformColumns : null,
   );
 
   const columnContext = React.useMemo(
@@ -280,11 +298,12 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   const pureColWidths = colsKeys.map(columnKey => colsWidths.get(columnKey));
   const colWidths = React.useMemo(() => pureColWidths, [pureColWidths.join('_')]);
   const stickyOffsets = useStickyOffsets(colWidths, flattenColumns.length);
-  const fixHeader = validateValue(scroll?.y); // 是否支持纵向滚动条
-  const horizonScroll = validateValue(scroll?.x);
+  const fixHeader = scroll && validateValue(scroll?.y); // 是否支持纵向滚动条
+  const horizonScroll = (scroll && validateValue(scroll?.x)) || Boolean(expandableConfig.fixed);
   const fixColumn = horizonScroll && flattenColumns.some(({ fixed }) => fixed);
 
   // Sticky
+  const stickyRef = React.useRef<{ setScrollLeft: (left: number) => void }>();
   /**
    * isSticky 是否粘性布局
    */
@@ -293,8 +312,7 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
 
   // footer
   const summaryNode = summary?.(mergedData);
-  console.log(123, summaryNode);
-  
+
   //
   const fixFooter =
     (fixHeader || isSticky) &&
@@ -369,7 +387,7 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
       forceScroll(mergedScrollLeft, scrollHeaderRef.current);
       forceScroll(mergedScrollLeft, scrollBodyRef.current);
       forceScroll(mergedScrollLeft, scrollSummaryRef.current);
-      // forceScroll(mergedScrollLeft, scrollHeaderRef.current);
+      forceScroll(mergedScrollLeft, stickyRef.current?.setScrollLeft);
     }
 
     if (currentTarget) {
@@ -387,6 +405,9 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   const triggerOnScroll = () => {
     if (horizonScroll && scrollBodyRef.current) {
       onScroll({ currentTarget: scrollBodyRef.current });
+    } else {
+      setPingedLeft(false);
+      setPingedRight(false);
     }
   };
 
@@ -413,9 +434,15 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
 
   React.useEffect(() => {
     setScrollbarSize(getTargetScrollBarSize(scrollBodyRef.current).width);
+    setSupportSticky(isStyleSupport('position', 'sticky'));
   }, []);
 
   // ================== INTERNAL HOOKS ==================
+  React.useEffect(() => {
+    if (internalHooks === INTERNAL_HOOKS && internalRefs) {
+      internalRefs.body.current = scrollBodyRef.current;
+    }
+  });
 
   // ====================== Render ======================
   const TableComponent = getComponent(['table'], 'table');
@@ -425,16 +452,24 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     if (tableLayout) {
       return tableLayout;
     }
-    if (flattenColumns.some(({ ellipsis }) => ellipsis)) {
+
+    if (fixColumn) {
+      return scroll?.x === 'max-content' ? 'auto' : 'fixed';
+    }
+
+    if (fixHeader || isSticky || flattenColumns.some(({ ellipsis }) => ellipsis)) {
       return 'fixed';
     }
+
     return 'auto';
-  }, [tableLayout]);
+  }, [fixHeader, fixColumn, flattenColumns, tableLayout, isSticky]);
+
+  let groupTableNode: React.ReactNode;
 
   // Header props
   const headerProps = {
     colWidths,
-    columnCount: flattenColumns.length,
+    columCount: flattenColumns.length,
     stickyOffsets,
     onHeaderRow,
     fixHeader,
@@ -469,43 +504,57 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
   );
 
   const bodyColGroup = (
-    <ColGroup colWidth={flattenColumns.map(column => column.width)} columns={flattenColumns} />
+    <ColGroup colWidths={flattenColumns.map(({ width }) => width)} columns={flattenColumns} />
   );
 
-  let groupTableNode: React.ReactNode;
+  const customizeScrollBody = getComponent(['body']) as CustomizeScrollBody<RecordType>;
 
   if (fixHeader || isSticky) {
-    const bodyContent: React.ReactNode = (
-      <div
-        style={{
-          ...scrollXStyle,
-          ...scrollYStyle,
-        }}
-        onScroll={onScroll}
-        ref={scrollBodyRef}
-        className={classNames(`${prefixCls}-body`)}
-      >
-        <TableComponent
+    let bodyContent: React.ReactNode;
+    if (typeof customizeScrollBody === 'function') {
+      headerProps.colWidths = flattenColumns.map(({ width }, index) => {
+        const colWidth = index === columns.length - 1 ? (width as number) - scrollbarSize : width;
+        if (typeof colWidth === 'number' && !Number.isNaN(colWidth)) {
+          return colWidth;
+        }
+
+        return 0;
+      }) as number[];
+    } else {
+      bodyContent = (
+        <div
           style={{
-            ...scrollTableStyle,
-            tableLayout: mergedTableLayout,
+            ...scrollXStyle,
+            ...scrollYStyle,
           }}
+          onScroll={onScroll}
+          ref={scrollBodyRef}
+          className={classNames(`${prefixCls}-body`)}
         >
-          {bodyColGroup}
-          {bodyTable}
-          {!fixFooter && summaryNode && (
-            <Footer stickyOffsets={stickyOffsets} flattenColumns={flattenColumns}>
-              {summaryNode}
-            </Footer>
-          )}
-        </TableComponent>
-      </div>
-    );
+          <TableComponent
+            style={{
+              ...scrollTableStyle,
+              tableLayout: mergedTableLayout,
+            }}
+          >
+            {bodyColGroup}
+            {bodyTable}
+            {!fixFooter && summaryNode && (
+              <Footer stickyOffsets={stickyOffsets} flattenColumns={flattenColumns}>
+                {summaryNode}
+              </Footer>
+            )}
+          </TableComponent>
+        </div>
+      );
+    }
 
     const fixedHolderProps = {
       noData: !mergedData.length,
+      maxContentScroll: horizonScroll && scroll.x === 'max-content',
       ...headerProps,
       ...columnContext,
+      direction,
       stickyClassName,
       onScroll,
     };
@@ -542,6 +591,16 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
             {fixedHolderPassProps => <Footer {...fixedHolderPassProps}>{summaryNode}</Footer>}
           </FixedHolder>
         )}
+
+        {isSticky && (
+          <StickyScrollBar
+            ref={stickyRef}
+            offsetScroll={offsetScroll}
+            scrollBodyRef={scrollBodyRef}
+            onScroll={onScroll}
+            container={container}
+          />
+        )}
       </>
     );
   } else {
@@ -569,16 +628,33 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     );
   }
 
+  const ariaProps = pickAttrs(props, { aria: true, data: true });
   let fullTable = (
     <div
       className={classNames(prefixCls, className, {
-        [`${prefixCls}-ping-left`]: pingedLeft, // 左侧阴影
+        [`${prefixCls}-rtl`]: direction === 'rtl',
+        [`${prefixCls}-ping-left`]: pingedLeft,
         [`${prefixCls}-ping-right`]: pingedRight,
+        [`${prefixCls}-layout-fixed`]: tableLayout === 'fixed',
+        [`${prefixCls}-fixed-header`]: fixHeader,
+        /** No used but for compatible */
+        [`${prefixCls}-fixed-column`]: fixColumn,
+        [`${prefixCls}-scroll-horizontal`]: horizonScroll,
+        [`${prefixCls}-has-fix-left`]: flattenColumns[0] && flattenColumns[0].fixed,
+        [`${prefixCls}-has-fix-right`]:
+          flattenColumns[flattenColumns.length - 1] &&
+          flattenColumns[flattenColumns.length - 1].fixed === 'right',
       })}
       style={style}
+      id={id}
       ref={fullTableRef}
+      {...ariaProps}
     >
-      <MemoTableContent>
+      <MemoTableContent
+        pingLeft={pingedLeft}
+        pingRight={pingedRight}
+        props={{ ...props, stickyOffsets, mergedExpandedKeys }}
+      >
         {title && <Panel className={`${prefixCls}-title`}>{title(mergedData)}</Panel>}
         <div className={`${prefixCls}-container`}>{groupTableNode}</div>
         {footer && <Panel className={`${prefixCls}-footer`}>{footer(mergedData)}</Panel>}
@@ -607,20 +683,28 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     () => ({
       ...columnContext,
       tableLayout: mergedTableLayout,
+      rowClassName,
+      expandedRowClassName,
       expandIcon: mergedExpandIcon,
       expandableType,
-      onTriggerExpand,
-      indentSize,
+      expandRowByClick,
       expandedRowRender,
+      onTriggerExpand,
+      expandIconColumnIndex,
+      indentSize,
     }),
     [
-      mergedTableLayout,
       columnContext,
-      expandableType,
-      onTriggerExpand,
+      mergedTableLayout,
+      rowClassName,
+      expandedRowClassName,
       mergedExpandIcon,
-      indentSize,
+      expandableType,
+      expandRowByClick,
       expandedRowRender,
+      onTriggerExpand,
+      expandIconColumnIndex,
+      indentSize,
     ],
   );
 
@@ -648,6 +732,12 @@ function Table<RecordType extends DefaultRecordType>(props: TableProps<RecordTyp
     </StickyContext.Provider>
   );
 }
+
+Table.EXPAND_COLUMN = EXPAND_COLUMN;
+
+Table.Column = Column;
+
+Table.ColumnGroup = ColumnGroup;
 
 Table.Summary = FooterComponents;
 
