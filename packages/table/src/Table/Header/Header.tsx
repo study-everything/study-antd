@@ -25,7 +25,7 @@ function parseHeaderRows<RecordType>(
     let currentColIndex = colIndex;
 
     const colSpans = columns.filter(Boolean).map(column => {
-      const cell = {
+      const cell: CellType<RecordType> = {
         key: column.key,
         className: column.className || '',
         children: column.title,
@@ -41,15 +41,16 @@ function parseHeaderRows<RecordType>(
           (total, count) => total + count,
           0,
         );
+        cell.hasSubColumns = true;
       }
 
-      // if (subColumns && subColumns.length > 0) {
-      // }
-      // if ('colSpan' in column) {
-      // }
+      if ('colSpan' in column) {
+        ({ colSpan } = column);
+      }
 
-      // if ('rowSpan' in column) {
-      // }
+      if ('rowSpan' in column) {
+        cell.rowSpan = column.rowSpan;
+      }
 
       cell.colSpan = colSpan;
       cell.colEnd = cell.colStart + colSpan - 1;
@@ -66,18 +67,32 @@ function parseHeaderRows<RecordType>(
 
   // Handle `rowSpan`
   const rowCount = rows.length;
-  for (let i = 0; i < rowCount; i++) {
-    rows[i].forEach(cell => {
-      //  if()
+  for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+    rows[rowIndex].forEach(cell => {
+      if (!('rowSpan' in cell) && !cell.hasSubColumns) {
+        cell.rowSpan = rowCount - rowIndex;
+      }
     });
   }
   return rows;
 }
 
-function Header({ stickyOffsets, columns, flattenColumns, onHeaderRow }) {
-  const { prefixCls, getComponent } = React.useContext(TableContext);
+export interface HeaderProps<RecordType> {
+  columns: ColumnsType<RecordType>;
+  flattenColumns: readonly ColumnType<RecordType>[];
+  stickyOffsets: StickyOffsets;
+  onHeaderRow: GetComponentProps<readonly ColumnType<RecordType>[]>;
+}
 
+function Header<RecordType>({
+  stickyOffsets,
+  columns,
+  flattenColumns,
+  onHeaderRow,
+}: HeaderProps<RecordType>) {
+  const { prefixCls, getComponent } = React.useContext(TableContext);
   const rows = React.useMemo(() => parseHeaderRows(columns), [columns]);
+  
   const WrapperComponent = getComponent(['header', 'wrapper'], 'thead');
   const trComponent = getComponent(['header', 'row'], 'tr');
   const thComponent = getComponent(['header', 'cell'], 'th');

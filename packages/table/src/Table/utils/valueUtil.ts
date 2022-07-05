@@ -1,3 +1,5 @@
+import type { Key, DataIndex } from '../interface';
+
 const INTERNAL_KEY_PREFIX = 'RC_TABLE_KEY';
 
 function toArray<T>(arr: T | readonly T[]): T[] {
@@ -7,13 +9,18 @@ function toArray<T>(arr: T | readonly T[]): T[] {
   return (Array.isArray(arr) ? arr : [arr]) as T[];
 }
 
-export function getPathValue(record, path) {
+export function getPathValue<ValueType, ObjectType extends object>(
+  record: ObjectType,
+  path: DataIndex,
+): ValueType {
   // path = ['header', 'wrapper']
   if (!path && typeof path !== 'number') {
     return record as unknown as ValueType;
   }
-  let current = record;
   const pathList = toArray(path);
+
+  let current: ValueType | ObjectType = (record = record);
+
   for (let i = 0; i < pathList.length; i++) {
     if (!current) {
       return null;
@@ -21,7 +28,7 @@ export function getPathValue(record, path) {
     const prop = pathList[i];
     current = current[prop];
   }
-  return current;
+  return current as ValueType;
 }
 
 export function getColumnsKey(columns) {

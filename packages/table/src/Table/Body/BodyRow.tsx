@@ -81,19 +81,53 @@ function BodyRow<RecordType extends { children?: readonly RecordType[] }>(
   const mergedExpandable = rowSupportExpand || nestExpandable;
 
   // ======================== Expandable =========================
-  // const onExpandRef = React.useRef(onTriggerExpand);
-  // onExpandRef.current = onTriggerExpand;
+  const onExpandRef = React.useRef(onTriggerExpand);
+  onExpandRef.current = onTriggerExpand;
 
-  // const onInternalTriggerExpand = (...args: Parameters<typeof onTriggerExpand>) => {
-  //   onExpandRef.current(...args);
-  // };
+  const onInternalTriggerExpand = (...args: Parameters<typeof onTriggerExpand>) => {
+    onExpandRef.current(...args);
+  };
+
+  // =========================== onRow ===========================
+  let additionalProps;
+  if (onRow) {
+    additionalProps = onRow(record, index);
+  }
+
+  const onClick = (event, ...args) => {
+    if (expandRowByClick && mergedExpandable) {
+      onInternalTriggerExpand(record, event);
+    }
+    additionalProps?.onClick?.(event, ...args);
+  };
+
+  // =========================== Base tr row ===========================
+  let computeRowClassName: string;
+  if (typeof rowClassName === 'string') {
+    computeRowClassName = rowClassName;
+  } else if (typeof rowClassName === 'function') {
+    computeRowClassName = rowClassName(record, index, indent);
+  }
 
   const columnsKey = getColumnsKey(flattenColumns); // ['a','b','c','d']
   const baseRowNode = (
     <RowComponent
-      className={classNames(className, `${prefixCls}-row`, `${prefixCls}-row-level-${indent}`)}
+      {...additionalProps}
+      data-row-key={rowKey}
+      className={classNames(
+        className,
+        `${prefixCls}-row`,
+        `${prefixCls}-row-level-${indent}`,
+        computeRowClassName,
+        additionalProps && additionalProps.className,
+      )}
+      style={{
+        ...style,
+        ...(additionalProps ? additionalProps.style : null),
+      }}
+      onClick={onClick}
     >
-      {flattenColumns.map((column, colIndex) => {
+      {flattenColumns.map((column: ColumnType<RecordType>, colIndex) => {
         const { render, dataIndex, className: columnClassName } = column;
 
         const key = columnsKey[colIndex];
@@ -126,6 +160,8 @@ function BodyRow<RecordType extends { children?: readonly RecordType[] }>(
           <Cell
             className={columnClassName}
             ellipsis={column.ellipsis}
+            align={column.align}
+            component={cellComponent}
             prefixCls={prefixCls}
             key={key}
             record={record}
@@ -133,8 +169,8 @@ function BodyRow<RecordType extends { children?: readonly RecordType[] }>(
             renderIndex={renderIndex}
             dataIndex={dataIndex}
             render={render}
-            component={cellComponent}
-            expanded={appendCellNode}
+            shouldCellUpdate={column.shouldCellUpdate}
+            expanded={appendCellNode && expanded}
             {...fixedInfo}
             appendNode={appendCellNode}
             additionalProps={additionalCellProps}
