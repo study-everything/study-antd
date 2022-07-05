@@ -1,5 +1,5 @@
 import * as React from 'react';
-
+import toArray from 'rc-util/lib/Children/toArray';
 import type {
   ColumnsType,
   ColumnType,
@@ -13,14 +13,44 @@ import type {
 import { INTERNAL_COL_DEFINE } from '../utils/legacyUtil';
 import { EXPAND_COLUMN } from '../constant';
 
+// 使用 Column组件的解析
+export function convertChildrenToColumns<RecordType>(
+  children: React.ReactNode,
+): ColumnsType<RecordType> {
+  return toArray(children)
+    .filter(node => React.isValidElement(node))
+    .map(({ key, props }: React.ReactElement) => {
+      const { children: nodeChildren, ...restProps } = props;
+      const column = {
+        key,
+        ...restProps,
+      };
+
+      if (nodeChildren) {
+        column.children = convertChildrenToColumns(nodeChildren);
+      }
+
+      return column;
+    });
+}
+
 function flatColumns<RecordType>(columns: ColumnsType<RecordType>): ColumnType<RecordType>[] {
   return columns.reduce((list, column) => {
     const { fixed } = column;
     const parsedFixed = fixed === true ? 'left' : fixed;
 
-    // const subColumns = column.children;
-    // if (subColumns && subColumns.length > 0) {
-    // }
+    // 头部合并
+    const subColumns = (column as ColumnGroupType<RecordType>).children;
+    if (subColumns && subColumns.length > 0) {
+      return [
+        ...list,
+        ...flatColumns(subColumns).map(subColum => ({
+          fixed: parsedFixed,
+          ...subColum,
+        })),
+      ];
+    }
+
     return [
       ...list,
       {
@@ -69,7 +99,10 @@ function useColumns<RecordType>(
   },
   transformColumns: (columns: ColumnsType<RecordType>) => ColumnsType<RecordType>,
 ) {
-  const baseColumns = React.useMemo(() => columns, [columns, children]);
+  const baseColumns = React.useMemo(
+    () => columns || convertChildrenToColumns(children),
+    [columns, children],
+  );
 
   // ========================== Expand ==========================
   const withExpandColumns = React.useMemo(() => {

@@ -9,6 +9,10 @@ import ResizeContext from '../context/ResizeContext';
 import MeasureRow from './MeasureRow';
 import ExpandedRow from './ExpandedRow';
 
+import HoverContext from '../context/HoverContext';
+import type { PerfRecord } from '../context/PerfContext';
+import PerfContext from '../context/PerfContext';
+
 export interface BodyProps<RecordType> {
   data: readonly RecordType[];
   getRowKey: GetRowKey<RecordType>;
@@ -35,6 +39,24 @@ function Body<RecordType>({
   const { flattenColumns } = React.useContext(BodyContext);
 
   const flattenData = useFlattenRecords(data, childrenColumnName, expandedKeys, getRowKey);
+
+  const perfRef = React.useRef<PerfRecord>({
+    renderWithProps: false,
+  });
+
+  // =========================== onHover ===========================
+  const [startRow, setStartRow] = React.useState(-1);
+  const [endRow, setEndRow] = React.useState(-1);
+
+  const onHover = React.useCallback((start: number, end: number) => {
+    setStartRow(start);
+    setEndRow(end);
+  }, []);
+
+  const hoverContext = React.useMemo(
+    () => ({ startRow, endRow, onHover }),
+    [onHover, startRow, endRow],
+  );
 
   // ====================== Render ======================
   const bodyNode = React.useMemo(() => {
@@ -97,9 +119,30 @@ function Body<RecordType>({
         {rows}
       </WrapperComponent>
     );
-  }, [data, prefixCls, flattenData, onColumnResize]);
+  }, [
+    data,
+    prefixCls,
+    onRow,
+    measureColumnWidth,
+    expandedKeys,
+    getRowKey,
+    getComponent,
+    emptyNode,
+    flattenColumns,
+    childrenColumnName,
+    onColumnResize,
+    rowExpandable,
+    flattenData,
+  ]);
 
-  return bodyNode;
+  return (
+    <PerfContext.Provider value={perfRef.current}>
+      <HoverContext.Provider value={hoverContext}>{bodyNode}</HoverContext.Provider>
+    </PerfContext.Provider>
+  );
 }
 
-export default Body;
+const MemoBody = React.memo(Body);
+MemoBody.displayName = 'Body';
+
+export default MemoBody;
