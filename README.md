@@ -68,7 +68,7 @@ $ pnpm -F @study/style build
 - [x] Card卡片
 - [x] Carousel走马灯
 - [ ] Collapse折叠面板
-- [ ] Comment评论
+- [x] Comment评论
 - [x] Descriptions描述列表
 - [x] Empty空状态
 - [ ] Image图片
