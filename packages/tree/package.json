@@ -16,6 +16,7 @@
 		"@study/style": "^1.0.0",
 		"@study/util": "^1.0.0",
 		"classname": "^0.0.0",
+		"rc-motion": "^2.6.0",
 		"rc-virtual-list": "^3.4.8",
 		"tslib": "^2.4.0"
 	}
