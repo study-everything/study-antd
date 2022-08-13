@@ -55,7 +55,7 @@ $ pnpm -F @study/style build
 - [ ] Radio单选框
 - [x] Mentions提及
 - [ ] Rate评分
-- [ ] Select选择器
+- [x] Select选择器
 - [ ] Slider滑动输入条
 - [x] Switch开关
 - [ ] TimePicker时间选择框
