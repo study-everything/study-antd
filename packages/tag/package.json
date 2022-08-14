@@ -15,7 +15,7 @@
 	"dependencies": {
 		"@study/style": "^1.0.0",
 		"@study/util": "^1.0.0",
-		"classname": "^0.0.0",
+		"classnames": "^2.3.1",
 		"tslib": "^2.4.0"
 	}
 }

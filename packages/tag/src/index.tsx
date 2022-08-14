@@ -1,4 +1,4 @@
 
 export type { TagProps } from './Tag';
 
-export { Tag } from './Tag';
+export { default as Tag } from './Tag';
