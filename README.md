@@ -74,7 +74,7 @@ $ pnpm -F @study/style build
 - [ ] Image图片
 - [ ] List列表
 - [ ] Popover气泡卡片
-- [ ] Segmented分段控制器
+- [x] Segmented分段控制器
 - [ ] Statistic统计数值
 - [ ] Table表格
 - [ ] Tabs标签页
