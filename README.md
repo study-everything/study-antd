@@ -42,7 +42,7 @@ $ pnpm -F @study/style build
 - [ ] Breadcrumb面包屑
 - [x] Dropdown下拉菜单
 - [ ] Menu导航菜单
-- [ ] PageHeader页头
+- [x] PageHeader页头
 - [ ] Pagination分页
 - [ ] Steps步骤条
 - [ ] AutoComplete自动完成
