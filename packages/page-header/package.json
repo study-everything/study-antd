@@ -1,5 +1,5 @@
 {
-	"name": "@study/select",
+	"name": "@study/page-header",
 	"main": "cjs/index.js",
 	"module": "esm/index.js",
 	"typings": "lib/index.d.ts",
@@ -7,7 +7,6 @@
 		"build": "gulp"
 	},
 	"devDependencies": {
-		"rc-select": "^14.1.5",
 		"react": "^18.1.0"
 	},
 	"peerDependencies": {
@@ -16,7 +15,9 @@
 	"dependencies": {
 		"@study/style": "^1.0.0",
 		"@study/util": "^1.0.0",
+		"antd": "^4.22.8",
 		"classname": "^0.0.0",
+		"rc-resize-observer": "^1.2.0",
 		"tslib": "^2.4.0"
 	}
 }
