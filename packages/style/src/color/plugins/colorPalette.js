@@ -1,18 +1,18 @@
 const tinycolor = require('./tinyColor');
 
 module.exports = {
-  install: function (less, pluginManager, functions) {
-    functions.add('colorPalette', function (color, index) {
-      var hueStep = 2;
-      var saturationStep = 0.16;
-      var saturationStep2 = 0.05;
-      var brightnessStep1 = 0.05;
-      var brightnessStep2 = 0.15;
-      var lightColorCount = 5;
-      var darkColorCount = 4;
+  install (less, pluginManager, functions) {
+    functions.add('colorPalette', (color, index) => {
+      const hueStep = 2;
+      const saturationStep = 0.16;
+      const saturationStep2 = 0.05;
+      const brightnessStep1 = 0.05;
+      const brightnessStep2 = 0.15;
+      const lightColorCount = 5;
+      const darkColorCount = 4;
 
-      var getHue = function (hsv, i, isLight) {
-        var hue;
+      const getHue = function (hsv, i, isLight) {
+        let hue;
         if (hsv.h >= 60 && hsv.h <= 240) {
           hue = isLight ? hsv.h - hueStep * i : hsv.h + hueStep * i;
         } else {
@@ -25,8 +25,8 @@ module.exports = {
         }
         return Math.round(hue);
       };
-      var getSaturation = function (hsv, i, isLight) {
-        var saturation;
+      const getSaturation = function (hsv, i, isLight) {
+        let saturation;
         if (isLight) {
           saturation = hsv.s - saturationStep * i;
         } else if (i === darkColorCount) {
@@ -45,8 +45,8 @@ module.exports = {
         }
         return Number(saturation.toFixed(2));
       };
-      var getValue = function (hsv, i, isLight) {
-        var value;
+      const getValue = function (hsv, i, isLight) {
+        let value;
         if (isLight) {
           value = hsv.v + brightnessStep1 * i;
         } else {
@@ -59,11 +59,11 @@ module.exports = {
       };
 
       function colorPalette(color, index) {
-        var isLight = index <= 6;
+        const isLight = index <= 6;
         color = color.value;
         index = index.value;
-        var hsv = tinycolor(color).toHsv();
-        var i = isLight ? lightColorCount + 1 - index : index - lightColorCount - 1;
+        const hsv = tinycolor(color).toHsv();
+        const i = isLight ? lightColorCount + 1 - index : index - lightColorCount - 1;
         return tinycolor({
           h: getHue(hsv, i, isLight),
           s: getSaturation(hsv, i, isLight),
