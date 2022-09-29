@@ -25,6 +25,7 @@ const InternalSelect = (props, ref) => {
     children,
     disabled: customDisabled,
     showArrow,
+    ...restProps
   } = props
 
   const mode = React.useMemo(() => {
@@ -60,7 +61,7 @@ const InternalSelect = (props, ref) => {
 
   const mergedSize = customizeSize || size;
 
-  const {dropdownClassName} = props
+  const dropdownClassName = props.dropdownClassName
   
 
   const {
