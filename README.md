@@ -61,7 +61,7 @@ $ pnpm -F @study/style build
 - [ ] TimePicker时间选择框
 - [ ] Transfer穿梭框
 - [x] TreeSelect树选择
-- [ ] Upload上传
+- [x] Upload上传
 - [x] Avatar头像
 - [ ] Badge徽标数
 - [ ] Calendar日历
