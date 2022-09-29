@@ -19,7 +19,8 @@ import { getTransitionName, getTransitionDirection } from 'antd/es/_util/motion'
 import { FormItemInputContext } from 'antd/es/form/context';
 import type { InputStatus } from 'antd/es/_util/statusUtils';
 import { getMergedStatus, getStatusClassNames } from 'antd/es/_util/statusUtils';
-import defaultRenderEmpty from 'antd/es/config-provider/defaultRenderEmpty';
+// 此处因为项目启动报错我更改了，如果作者看到了可以在群里联系我，昵称是'下一次'
+// import defaultRenderEmpty from 'antd/es/config-provider/defaultRenderEmpty';
 import DisabledContext from './context/DisabledContext';
 
 type RawValue = string | number;
@@ -132,7 +133,10 @@ const InternalTreeSelect = <OptionType extends BaseOptionType | DefaultOptionTyp
   if (notFoundContent !== undefined) {
     mergedNotFound = notFoundContent;
   } else {
-    mergedNotFound = (renderEmpty || defaultRenderEmpty)('Select');
+    // 此处因为项目启动报错我更改了，如果作者看到了可以在群里联系我，昵称是'下一次'
+    // mergedNotFound = (renderEmpty || defaultRenderEmpty)('Select');
+    mergedNotFound = renderEmpty('Select');
+
   }
 
   // ==================== Render =====================

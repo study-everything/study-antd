@@ -1,0 +1,36 @@
+
+@import '~@study/style/src/themes/index.less';
+@import '~@study/style/src/mixins/index.less';
+
+
+.ant-space {
+  display: inline-flex;
+
+  &-vertical {
+    flex-direction: column;
+  }
+
+  &-align {
+    &-center {
+      align-items: center;
+    }
+
+    &-start {
+      align-items: flex-start;
+    }
+
+    &-end {
+      align-items: flex-end;
+    }
+
+    &-baseline {
+      align-items: baseline;
+    }
+  }
+}
+
+.ant-space-item {
+  &:empty {
+    display: none;
+  }
+}

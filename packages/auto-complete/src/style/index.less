@@ -1,0 +1,32 @@
+@import '~@study/style/src/themes/index.less';
+@import '~@study/style/src/mixins/index.less';
+
+.autoComplete {
+    position: relative;
+    height: 200px;
+
+    &-select {
+        border: 1px solid #ccc;
+    }
+
+    &-warper {
+        position: absolute;
+        width: 162px;
+        height: 100px;
+        background-color: rgb(255, 255, 255);
+        border-width: 1px;
+        border-style: solid;
+        border-color: rgb(217, 217, 217);
+        box-shadow: 0px 0px 6px #00000030;
+        left: 0;
+        top: 25px;
+    }
+
+    &-error {
+        border: 1px solid #ff4d4f;
+    }
+
+    &-warning {
+        border: 1px solid #faad14;
+    }
+}
