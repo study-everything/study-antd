@@ -42,7 +42,7 @@ $ pnpm -F @study/style build
 - [ ] Breadcrumb面包屑
 - [x] Dropdown下拉菜单
 - [ ] Menu导航菜单
-- [ ] PageHeader页头
+- [x] PageHeader页头
 - [ ] Pagination分页
 - [ ] Steps步骤条
 - [ ] AutoComplete自动完成
@@ -61,7 +61,7 @@ $ pnpm -F @study/style build
 - [ ] TimePicker时间选择框
 - [ ] Transfer穿梭框
 - [x] TreeSelect树选择
-- [ ] Upload上传
+- [x] Upload上传
 - [x] Avatar头像
 - [ ] Badge徽标数
 - [ ] Calendar日历
@@ -74,7 +74,7 @@ $ pnpm -F @study/style build
 - [ ] Image图片
 - [ ] List列表
 - [ ] Popover气泡卡片
-- [ ] Segmented分段控制器
+- [x] Segmented分段控制器
 - [ ] Statistic统计数值
 - [ ] Table表格
 - [ ] Tabs标签页
