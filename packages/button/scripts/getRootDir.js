@@ -1,5 +1,7 @@
-const path = require('path');
-function getRootDir() {
-  return path.join(process.cwd(), '../');
+
+const path = require('path')
+function getRootDir(){
+
+	return path.join(process.cwd(), '../')
 }
-module.exports = getRootDir;
+module.exports = getRootDir

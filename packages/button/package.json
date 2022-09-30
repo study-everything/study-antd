@@ -4,10 +4,7 @@
 	"module": "esm/index.js",
 	"typings": "lib/index.d.ts",
 	"scripts": {
-		"build": "gulp",
-		"test": "rollup -c ./rollup.config.js",
-		"dts": "node ./scripts/generateDTS",
-		"buildLess": "gulp"
+		"build": "gulp"
 	},
 	"devDependencies": {
 		"react": "^18.1.0"
@@ -16,7 +13,6 @@
 		"react": "^18.1.0"
 	},
 	"dependencies": {
-		"@ant-design/icons": "^4.7.0",
 		"@study/style": "^1.0.0",
 		"@study/util": "^1.0.0",
 		"classname": "^0.0.0",
