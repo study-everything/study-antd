@@ -36,7 +36,7 @@ $ pnpm -F @study/style build
 - [x] Typography排版
 - [ ] Divider分割线
 - [ ] Grid栅格
-- [ ] Layout布局
+- [x] Layout布局
 - [ ] Space间距
 - [ ] Affix固钉
 - [ ] Breadcrumb面包屑
