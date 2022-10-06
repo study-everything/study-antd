@@ -5,3 +5,4 @@ lib
 .idea/
 .DS_Store
 .vscode
+.pnpm-debug.log
