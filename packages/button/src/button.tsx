@@ -1,74 +1,78 @@
-/* eslint-disable react/button-has-type */
-import * as React from 'react';
-import classNames from 'classnames';
-import Group, { GroupSizeContext } from './button-group';
-import { Wave, tuple, warning, cloneElement, omit } from '@study/util';
-import LoadingIcon from './LoadingIcon';
 
-export type SizeType = 'small' | 'middle' | 'large' | undefined;
+import React from 'react'
+import omit from 'rc-util/lib/omit';
+import classNames from 'classnames';
+import { ConfigContext } from './config-provider'
+import type { SizeType } from './config-provider/SizeContext';
+import SizeContext from './config-provider/SizeContext';
+import DisabledContext from './config-provider/DisabledContext';
+import { tuple } from './utils/type';
+import { cloneElement } from './utils/reactNode';
+import Group, { GroupSizeContext } from './button-group';
+import LoadingIcon from './LoadingIcon'
+import Wave from './utils/wave';
+
 
 const rxTwoCNChar = /^[\u4e00-\u9fa5]{2}$/;
 const isTwoCNChar = rxTwoCNChar.test.bind(rxTwoCNChar);
 function isString(str: any) {
-  return typeof str === 'string';
+	return typeof str === 'string';
 }
 
 function isUnBorderedButtonType(type: ButtonType | undefined) {
-  return type === 'text' || type === 'link';
+	return type === 'text' || type === 'link';
 }
 
 function isReactFragment(node: React.ReactNode) {
-  return React.isValidElement(node) && node.type === React.Fragment;
+	return React.isValidElement(node) && node.type === React.Fragment;
 }
 
-// Insert one space between two chinese characters automatically.
 function insertSpace(child: React.ReactChild, needInserted: boolean) {
-  // Check the child if is undefined or null.
-  if (child == null) {
-    return;
-  }
-  const SPACE = needInserted ? ' ' : '';
-  // strictNullChecks oops.
-  if (
-    typeof child !== 'string' &&
-    typeof child !== 'number' &&
-    isString(child.type) &&
-    isTwoCNChar(child.props.children)
-  ) {
-    return cloneElement(child, {
-      children: child.props.children.split('').join(SPACE),
-    });
-  }
-  if (typeof child === 'string') {
-    return isTwoCNChar(child) ? <span>{child.split('').join(SPACE)}</span> : <span>{child}</span>;
-  }
-  if (isReactFragment(child)) {
-    return <span>{child}</span>;
-  }
-  return child;
+	if (child === null || child === undefined) {
+		return;
+	}
+	const SPACE = needInserted ? ' ' : '';
+	if (
+		typeof child !== 'string' &&
+		typeof child !== 'number' &&
+		isString(child.type) &&
+		isTwoCNChar(child.props.children) // 两个中文字符
+	) {
+		return cloneElement(child, {
+			children: child.props.children.split('').join(SPACE),
+		});
+	}
+	if (typeof child === 'string') {
+		return isTwoCNChar(child) ? <span>{child.split('').join(SPACE)}</span> : <span>{child}</span>;
+	}
+	if (isReactFragment(child)) {
+		return <span>{child}</span>;
+	}
+	return child;
 }
 
 function spaceChildren(children: React.ReactNode, needInserted: boolean) {
-  let isPrevChildPure: boolean = false;
-  const childList: React.ReactNode[] = [];
-  React.Children.forEach(children, child => {
-    const type = typeof child;
-    const isCurrentChildPure = type === 'string' || type === 'number';
-    if (isPrevChildPure && isCurrentChildPure) {
-      const lastIndex = childList.length - 1;
-      const lastChild = childList[lastIndex];
-      childList[lastIndex] = `${lastChild}${child}`;
-    } else {
-      childList.push(child);
-    }
+	let isPrevChildPure: boolean = false;
+	const childList: React.ReactNode[] = [];
+	React.Children.forEach(children, child => {
+		const type = typeof child;
+		// 把连续的字符串子节点合并成一个
+		const isCurrentChildPure = type === 'string' || type === 'number';
+		if (isPrevChildPure && isCurrentChildPure) {
+			const lastIndex = childList.length - 1;
+			const lastChild = childList[lastIndex];
+			childList[lastIndex] = `${lastChild}${child}`;
+		} else {
+			childList.push(child);
+		}
 
-    isPrevChildPure = isCurrentChildPure;
-  });
+		isPrevChildPure = isCurrentChildPure;
+	});
 
-  // Pass to React.Children.map to auto fill key
-  return React.Children.map(childList, child =>
-    insertSpace(child as React.ReactChild, needInserted),
-  );
+	return React.Children.map(childList, child =>
+		// 插入 space
+		insertSpace(child as React.ReactChild, needInserted),
+	);
 }
 
 const ButtonTypes = tuple('default', 'primary', 'ghost', 'dashed', 'link', 'text');
@@ -78,222 +82,238 @@ export type ButtonShape = typeof ButtonShapes[number];
 const ButtonHTMLTypes = tuple('submit', 'button', 'reset');
 export type ButtonHTMLType = typeof ButtonHTMLTypes[number];
 
-export type LegacyButtonType = ButtonType | 'danger';
-export function convertLegacyProps(type?: LegacyButtonType): ButtonProps {
-  if (type === 'danger') {
-    return { danger: true };
-  }
-  return { type };
-}
-
 export interface BaseButtonProps {
-  type?: ButtonType;
-  icon?: React.ReactNode;
-  /**
-   * Shape of Button
-   *
-   * @default default
-   */
-  shape?: ButtonShape;
-  size?: SizeType;
-  loading?: boolean | { delay?: number };
-  prefixCls?: string;
-  className?: string;
-  ghost?: boolean;
-  danger?: boolean;
-  block?: boolean;
-  children?: React.ReactNode;
-  direction: 'ltr' | 'rtl' | undefined;
+	type?: ButtonType;
+	icon?: React.ReactNode;
+	shape?: ButtonShape;
+	size?: SizeType;
+	disabled?: boolean;
+	loading?: boolean | { delay?: number };
+	prefixCls?: string;
+	className?: string;
+	ghost?: boolean;
+	danger?: boolean;
+	block?: boolean;
+	children?: React.ReactNode;
 }
 
-// Typescript will make optional not optional if use Pick with union.
-// Should change to `AnchorButtonProps | NativeButtonProps` and `any` to `HTMLAnchorElement | HTMLButtonElement` if it fixed.
-// ref: https://github.com/ant-design/ant-design/issues/15930
 export type AnchorButtonProps = {
-  href: string;
-  target?: string;
-  onClick?: React.MouseEventHandler<HTMLElement>;
+	href: string;
+	target?: string;
+	onClick?: React.MouseEventHandler<HTMLElement>;
 } & BaseButtonProps &
-  Omit<React.AnchorHTMLAttributes<any>, 'type' | 'onClick'>;
+	Omit<React.AnchorHTMLAttributes<any>, 'type' | 'onClick'>;
 
 export type NativeButtonProps = {
-  htmlType?: ButtonHTMLType;
-  onClick?: React.MouseEventHandler<HTMLElement>;
+	htmlType?: ButtonHTMLType;
+	onClick?: React.MouseEventHandler<HTMLElement>;
 } & BaseButtonProps &
-  Omit<React.ButtonHTMLAttributes<any>, 'type' | 'onClick'>;
+	Omit<React.ButtonHTMLAttributes<any>, 'type' | 'onClick'>;
 
 export type ButtonProps = Partial<AnchorButtonProps & NativeButtonProps>;
-
-interface CompoundedComponent
-  extends React.ForwardRefExoticComponent<ButtonProps & React.RefAttributes<HTMLElement>> {
-  Group: typeof Group;
-  __ANT_BUTTON: boolean;
-}
-
 type Loading = number | boolean;
 
 const InternalButton: React.ForwardRefRenderFunction<unknown, ButtonProps> = (props, ref) => {
-  const {
-    loading = false,
-    prefixCls: customizePrefixCls = 'ant-btn',
-    type = 'default',
-    danger,
-    shape = 'default',
-    size: customizeSize,
-    className,
-    children,
-    icon,
-    ghost = false,
-    block = false,
-    /** If we extract items here, we don't need use omit.js */
-    // React does not recognize the `htmlType` prop on a DOM element. Here we pick it out of `rest`.
-    htmlType = 'button' as ButtonProps['htmlType'],
-    direction,
-    ...rest
-  } = props;
+	const {
+		loading = false, // 加载中
+		prefixCls: customizePrefixCls, // 类前缀
+		type = 'default', // 按钮类型 default circle round
+		danger,
+		shape = 'default',
+		size: customizeSize, // 自定义的 button 尺寸大小
+		disabled: customDisabled, // 自定义是否禁用
+		className, // 自定义类名
+		children,// 子
+		icon, // 图标
+		ghost = false, // 是否启用 ghost 
+		block = false, // 自适应父容器
+		htmlType = 'button' as ButtonProps['htmlType'],  // html 原声的 type 属性
+		...rest
+	} = props
 
-  const groupSize = React.useContext(GroupSizeContext);
-  const [innerLoading, setLoading] = React.useState<Loading>(!!loading);
-  const [hasTwoCNChar, setHasTwoCNChar] = React.useState(false);
-  const buttonRef = (ref as any) || React.createRef<HTMLElement>();
 
-  const isNeedInserted = () =>
-    React.Children.count(children) === 1 && !icon && !isUnBorderedButtonType(type);
 
-  const fixTwoCNChar = () => {
-    // Fix for HOC usage like <FormatMessage />
-    if (!buttonRef || !buttonRef.current) {
-      return;
-    }
-    const buttonText = buttonRef.current.textContent;
-    if (isNeedInserted() && isTwoCNChar(buttonText)) {
-      if (!hasTwoCNChar) {
-        setHasTwoCNChar(true);
-      }
-    } else if (hasTwoCNChar) {
-      setHasTwoCNChar(false);
-    }
-  };
+	// 按钮的加载状态判断
+	const [innerLoading, setLoading] = React.useState<Loading>(!!loading);
+	// 是否是有两个中文字符
+	const [hasTwoCNChar, setHasTwoCNChar] = React.useState(false);
+	const buttonRef = (ref as any) || React.createRef<HTMLElement>();
 
-  // =============== Update Loading ===============
-  const loadingOrDelay: Loading =
-    typeof loading === 'object' && loading.delay ? loading.delay || true : !!loading;
+	// 设置按钮的 禁用状态
+	const disabled = React.useContext(DisabledContext);
+	const mergedDisabled = customDisabled || disabled;
 
-  React.useEffect(() => {
-    let delayTimer: number | null = null;
+	// button 基础大小设置
+	const size = React.useContext(SizeContext);
+	// button 组合的大小
+	const groupSize = React.useContext(GroupSizeContext);
 
-    if (typeof loadingOrDelay === 'number') {
-      delayTimer = window.setTimeout(() => {
-        delayTimer = null;
-        setLoading(loadingOrDelay);
-      }, loadingOrDelay);
-    } else {
-      setLoading(loadingOrDelay);
-    }
 
-    return () => {
-      if (delayTimer) {
-        // in order to not perform a React state update on an unmounted component
-        // and clear timer after 'loadingOrDelay' updated.
-        window.clearTimeout(delayTimer);
-        delayTimer = null;
-      }
-    };
-  }, [loadingOrDelay]);
+	// 有唯一子节点，并且不是 icon ，不是 文本和连接按钮 才添加space
+	const isNeedInserted = () =>
+		React.Children.count(children) === 1 && !icon && !isUnBorderedButtonType(type);
 
-  React.useEffect(fixTwoCNChar, [buttonRef]);
+	// getPrefixCls 得到类前缀的函数 
+	// autoInsertSpaceInButton 是否要在button添加space
+	// direction 方向
+	const { getPrefixCls, autoInsertSpaceInButton, direction } = React.useContext(ConfigContext);
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement, MouseEvent>) => {
-    const { onClick, disabled } = props;
-    // https://github.com/ant-design/ant-design/issues/30207
-    if (innerLoading || disabled) {
-      e.preventDefault();
-      return;
-    }
-    (onClick as React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>)?.(e);
-  };
+	// 得到样式类型前缀
+	const prefixCls = getPrefixCls('btn', customizePrefixCls);
+	// 是否要在button添加space
+	const autoInsertSpace = autoInsertSpaceInButton !== false;
 
-  warning(
-    !(typeof icon === 'string' && icon.length > 2),
-    'Button',
-    `\`icon\` is using ReactNode instead of string naming in v4. Please check \`${icon}\` at https://ant.design/components/icon`,
-  );
+	// button 大小类型后缀
+	const sizeClassNameMap = { large: 'lg', small: 'sm', middle: undefined };
+	// 配置 buton 大小
+	const sizeFullname = groupSize || customizeSize || size;
+	// 根据设置的大小 得到类后缀
+	const sizeCls = sizeFullname ? sizeClassNameMap[sizeFullname] || '' : '';
 
-  warning(
-    !(ghost && isUnBorderedButtonType(type)),
-    'Button',
-    "`link` or `text` button can't be a `ghost` button.",
-  );
+	// 如果处于加载状态使用 loading 图标，否则使用传递的图标
+	const iconType = innerLoading ? 'loading' : icon;
+	const linkButtonRestProps = omit(rest as AnchorButtonProps & { navigate: any }, ['navigate']);
 
-  const prefixCls = customizePrefixCls;
 
-  const sizeClassNameMap = { large: 'lg', small: 'sm', middle: undefined };
-  const sizeFullname = groupSize || customizeSize;
-  const sizeCls = sizeFullname ? sizeClassNameMap[sizeFullname] || '' : '';
+	// 配置样式
+	const classes = classNames(
+		prefixCls,
+		{
+			[`${prefixCls}-${shape}`]: shape !== 'default' && shape, // Note: Shape also has `default`
+			[`${prefixCls}-${type}`]: type,
+			[`${prefixCls}-${sizeCls}`]: sizeCls,
+			[`${prefixCls}-icon-only`]: !children && children !== 0 && !!iconType, // 只有 icon 存在的 button
+			[`${prefixCls}-background-ghost`]: ghost && !isUnBorderedButtonType(type), // 除掉 link text 类型的button
+			[`${prefixCls}-loading`]: innerLoading, // 处于加载状态的类样式
+			[`${prefixCls}-two-chinese-chars`]: hasTwoCNChar && autoInsertSpace && !innerLoading,
+			[`${prefixCls}-block`]: block, // 宽度自适应父元素 width 100%
+			[`${prefixCls}-dangerous`]: !!danger, // 危险色系
+			[`${prefixCls}-rtl`]: direction === 'rtl', // dom 元素方向属性设置
+			[`${prefixCls}-disabled`]: linkButtonRestProps.href !== undefined && mergedDisabled,
+		},
+		className,
+	);
 
-  const iconType = innerLoading ? 'loading' : icon;
 
-  const classes = classNames(
-    prefixCls,
-    {
-      [`${prefixCls}-${shape}`]: shape !== 'default' && shape, // Note: Shape also has `default`
-      [`${prefixCls}-${type}`]: type,
-      [`${prefixCls}-${sizeCls}`]: sizeCls,
-      [`${prefixCls}-icon-only`]: !children && children !== 0 && !!iconType,
-      [`${prefixCls}-background-ghost`]: ghost && !isUnBorderedButtonType(type),
-      [`${prefixCls}-loading`]: innerLoading,
-      [`${prefixCls}-two-chinese-chars`]: hasTwoCNChar,
-      [`${prefixCls}-block`]: block,
-      [`${prefixCls}-dangerous`]: !!danger,
-      [`${prefixCls}-rtl`]: direction === 'rtl',
-    },
-    className,
-  );
+	const fixTwoCNChar = () => {
+		if (!buttonRef || !buttonRef.current || autoInsertSpaceInButton === false) {
+			return;
+		}
+		const buttonText = buttonRef.current.textContent;
+		if (isNeedInserted() && isTwoCNChar(buttonText)) {
+			if (!hasTwoCNChar) {
+				setHasTwoCNChar(true);
+			}
+		} else if (hasTwoCNChar) {
+			setHasTwoCNChar(false);
+		}
+	};
 
-  const iconNode =
-    icon && !innerLoading ? (
-      icon
-    ) : (
-      <LoadingIcon existIcon={!!icon} prefixCls={prefixCls} loading={!!innerLoading} />
-    );
 
-  const kids = children || children === 0 ? spaceChildren(children, isNeedInserted()) : null;
+	// TODO:以下 处理loading   事件点击
+	const loadingOrDelay: Loading =
+		typeof loading === 'boolean' ? loading : (loading?.delay || true);
 
-  const linkButtonRestProps = omit(rest as AnchorButtonProps & { navigate: any }, ['navigate']);
-  if (linkButtonRestProps.href !== undefined) {
-    return (
-      <a {...linkButtonRestProps} className={classes} onClick={handleClick} ref={buttonRef}>
-        {iconNode}
-        {kids}
-      </a>
-    );
-  }
+	// 定时器处理
+	React.useEffect(() => {
+		let delayTimer: number | null = null;
 
-  const buttonNode = (
-    <button
-      {...(rest as NativeButtonProps)}
-      type={htmlType}
-      className={classes}
-      onClick={handleClick}
-      ref={buttonRef}
-    >
-      {iconNode}
-      {kids}
-    </button>
-  );
+		if (typeof loadingOrDelay === 'number') {
+			delayTimer = window.setTimeout(() => {
+				console.clear()
+				console.log('定时器中的。。。。。。。')
+				delayTimer = null;
+				setLoading(loadingOrDelay);
+			}, loadingOrDelay);
+		} else {
+			setLoading(loadingOrDelay);
+		}
 
-  if (isUnBorderedButtonType(type)) {
-    return buttonNode;
-  }
+		return () => {
+			if (delayTimer) {
+				window.clearTimeout(delayTimer);
+				delayTimer = null;
+			}
+		};
+	}, [loadingOrDelay]);
 
-  return <Wave disabled={!!innerLoading}>{buttonNode}</Wave>;
-};
+	React.useEffect(fixTwoCNChar, [buttonRef]);
+
+	// 点击事件处理
+	const handleClick = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement, MouseEvent>) => {
+		const { onClick } = props;
+		if (innerLoading || mergedDisabled) {
+			// 加载状态阻止点击时间，并且防止冒泡
+			e.preventDefault();
+			return;
+		}
+		(onClick as React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>)?.(e);
+	};
+	// TODO 以上
+
+
+	const iconNode =
+		icon && !innerLoading ? (
+			icon
+		) : (
+			<LoadingIcon existIcon={!!icon} prefixCls={prefixCls} loading={!!innerLoading} />
+		);
+
+
+	// button子元素是两个中文字符时添加空格（autoInsertSpace 控制）
+	const kids =
+		children || children === 0
+			? spaceChildren(children, isNeedInserted() && autoInsertSpace)
+			: null;
+
+	// 链接按钮
+	// 判断是否有 href 参数 如果有 那么改成链接
+	if (linkButtonRestProps.href !== undefined) {
+		return (
+			<a {...linkButtonRestProps} className={classes} onClick={handleClick} ref={buttonRef}>
+				{iconNode}
+				{kids}
+			</a>
+		);
+	}
+
+	const buttonNode = (
+		<button
+			{...(rest as NativeButtonProps)}
+			type={htmlType} // html 原声的 type 属性
+			className={classes}
+			ref={buttonRef}
+			onClick={handleClick}
+			disabled={mergedDisabled}
+		>
+			{iconNode}
+			{kids}
+		</button>
+	);
+
+	// 无边框按钮
+	if (isUnBorderedButtonType(type)) {
+		return buttonNode;
+	}
+
+	// 普通有边框按钮
+	return <Wave disabled={!!innerLoading}>{buttonNode}</Wave>
+}
+
+
+interface CompoundedComponent
+	extends React.ForwardRefExoticComponent<ButtonProps & React.RefAttributes<HTMLElement>> {
+	Group: typeof Group;
+	__ANT_BUTTON: boolean;
+}
+
 
 const Button = React.forwardRef<unknown, ButtonProps>(InternalButton) as CompoundedComponent;
 
-Button.displayName = 'Button';
 
 Button.Group = Group;
-Button.__ANT_BUTTON = true;
 
-export default Button;
+export {
+	Button
+};
+
