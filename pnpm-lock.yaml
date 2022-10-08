@@ -500,6 +500,21 @@ importers:
     devDependencies:
       react: 18.1.0
 
+  packages/modal:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      tslib: 2.4.0
+    devDependencies:
+      react: 18.1.0
+
   packages/notifiaction:
     specifiers:
       '@study/style': ^1.0.0
@@ -630,7 +645,7 @@ importers:
       classname: registry.npmmirror.com/classname/0.0.0
       tslib: registry.npmmirror.com/tslib/2.4.0
     devDependencies:
-      react: registry.npmmirror.com/react/18.1.0
+      react: 18.1.0
 
   packages/skeleton:
     specifiers:
@@ -13251,6 +13266,7 @@ packages:
       rc-virtual-list: 3.4.8_ef5jwxihqo6n7gxfmzogljlgcm
       react: 18.1.0
       react-dom: 18.1.0_react@18.1.0
+    dev: true
 
   /rc-select/14.1.6_ef5jwxihqo6n7gxfmzogljlgcm:
     resolution: {integrity: sha512-iYk9eMfYGAwUx8r4kSYEp2mml86Av4nmYCSq7wV8VEl2p4vfR4Q71Kf7IagQIiCmHKbM9yhf/rfLvQA6DnhFKg==}
