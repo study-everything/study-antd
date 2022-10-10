@@ -2,6 +2,7 @@ node_modules
 esm
 cjs
 lib
+dist
 .idea/
 .DS_Store
 .vscode

@@ -48,7 +48,7 @@ $ pnpm -F @study/style build
 - [ ] AutoComplete自动完成
 - [ ] Cascader级联选择
 - [ ] Checkbox多选框
-- [ ] DatePicker日期选择框
+- [x] DatePicker日期选择框
 - [ ] Form表单
 - [ ] Input输入框
 - [ ] InputNumber数字输入框
@@ -58,7 +58,7 @@ $ pnpm -F @study/style build
 - [x] Select选择器
 - [ ] Slider滑动输入条
 - [x] Switch开关
-- [ ] TimePicker时间选择框
+- [x] TimePicker时间选择框
 - [ ] Transfer穿梭框
 - [x] TreeSelect树选择
 - [x] Upload上传
