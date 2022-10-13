@@ -54,7 +54,7 @@ $ pnpm -F @study/style build
 - [ ] InputNumber数字输入框
 - [ ] Radio单选框
 - [x] Mentions提及
-- [ ] Rate评分
+- [x] Rate评分
 - [x] Select选择器
 - [ ] Slider滑动输入条
 - [x] Switch开关
