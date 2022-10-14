@@ -11,7 +11,10 @@ module.exports = {
     builder: 'webpack5',
   },
   "stories": [
-    "../packages/**/Tag.stories.tsx"
+    "../packages/**/*.stories.mdx",
+    "../packages/**/*.stories.@(js|jsx|ts|tsx)",
+		"../packages/**/*.story.@(js|jsx|ts|tsx)",
+		"../packages/**/*.story.mdx"
   ],
   "addons": [
     "@storybook/addon-links",

@@ -1,0 +1,35 @@
+{
+  "include": [
+    "./src"
+  ],
+  "exclude": [
+    "node_modules",
+    "lib",
+    "esm",
+    "cjs",
+    "lib/**/*",
+    "esm/**/*",
+    "cjs/**/*",
+    "scripts/**/*"
+  ],
+  "compilerOptions": {
+    "target": "ES2015",
+    "lib": [
+      "DOM",
+      "ESNext"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "jsx": "react",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmitOnError": true,
+    "baseUrl": ".",
+    "rootDir": "src",
+    "outDir": "lib",
+    "declaration": true,
+    "declarationMap": false,
+    "paths": {}
+  }
+}

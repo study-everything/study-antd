@@ -1,3 +1,5 @@
-export type { InputProps } from './input';
+import Input from './Input';
 
-export { Input } from './input';
+export type { InputProps, InputRef } from './interface';
+
+export default Input;
