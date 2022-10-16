@@ -220,8 +220,8 @@ import VirtualList from 'rc-virtual-list';
          newTransitionData.splice(keyIndex + 1, 0, MotionFlattenData);
  
          setTransitionData(newTransitionData);
-         setTransitionRange(rangeNodes);
-         setMotionType('show');
+        //  setTransitionRange(rangeNodes);
+        //  setMotionType('show');
        } else {
          const keyIndex = data.findIndex(({ key }) => key === diffExpanded.key);
  
@@ -236,8 +236,8 @@ import VirtualList from 'rc-virtual-list';
          newTransitionData.splice(keyIndex + 1, 0, MotionFlattenData);
  
          setTransitionData(newTransitionData);
-         setTransitionRange(rangeNodes);
-         setMotionType('hide');
+        //  setTransitionRange(rangeNodes);
+        //  setMotionType('hide');
        }
      } else if (prevData !== data) {
        // If whole data changed, we just refresh the list
@@ -266,29 +266,9 @@ import VirtualList from 'rc-virtual-list';
      dropPosition,
      keyEntities,
    };
- 
+
    return (
      <>
-       {focused && activeItem && (
-         <span style={HIDDEN_STYLE} aria-live="assertive">
-           {getAccessibilityPath(activeItem)}
-         </span>
-       )}
- 
-       <div>
-         <input
-           style={HIDDEN_STYLE}
-           disabled={focusable === false || disabled}
-           tabIndex={focusable !== false ? tabIndex : null}
-           onKeyDown={onKeyDown}
-           onFocus={onFocus}
-           onBlur={onBlur}
-           value=""
-           onChange={noop}
-           aria-label="for screen reader"
-         />
-       </div>
- 
        <div
          className={`${prefixCls}-treenode`}
          aria-hidden

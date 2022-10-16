@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/member-ordering */
+/* eslint-disable max-lines-per-function */
+/* eslint-disable default-case */
 // TODO: https://www.w3.org/TR/2017/NOTE-wai-aria-practices-1.1-20171214/examples/treeview/treeview-2/treeview-2a.html
 // Fully accessibility support
 
@@ -797,7 +800,6 @@ class Tree<TreeDataType extends DataNode | BasicDataNode = DataNode> extends Rea
   triggerExpandActionExpand: NodeMouseEventHandler = (e, treeNode) => {
     const { expandedKeys, flattenNodes } = this.state;
     const { expanded, key, isLeaf } = treeNode;
-    console.log(123123);
     if (isLeaf || e.shiftKey || e.metaKey || e.ctrlKey) {
       return;
     }
@@ -1148,7 +1150,7 @@ class Tree<TreeDataType extends DataNode | BasicDataNode = DataNode> extends Rea
               this.state.treeData,
               expandedKeys,
               fieldNames,
-            );
+              );
             this.setUncontrolledState({ flattenNodes: newFlattenTreeData });
           })
           .catch(() => {
