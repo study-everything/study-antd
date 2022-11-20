@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import { storiesOf } from '@storybook/react';
-import { Button } from './Button';
-import { SizeType } from './config-provider/SizeContext'
+import { Button } from './button';
+import type { SizeType } from './config-provider/SizeContext'
 import './style'
 
 const demoContainerStyles = {
@@ -61,7 +61,7 @@ storiesOf('Button', module).add('Demo', () => {
 
 		<div style={demoContainerStyles}>
 			<h2>Button 加载状态 Loading...</h2>
-			<Button style={spacing} onClick={clickHandler} loading={true} type="primary" >loading</Button>
+			<Button style={spacing} onClick={clickHandler} loading type="primary" >loading</Button>
 			<Button style={spacing} onClick={handleLoading} loading={loading} >{loading ? 'loading' : 'click'}</Button>
 		</div>
 
