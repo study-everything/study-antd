@@ -59,7 +59,7 @@ $ pnpm -F @study/style build
 - [ ] Slider滑动输入条
 - [x] Switch开关
 - [x] TimePicker时间选择框
-- [ ] Transfer穿梭框
+- [x] Transfer穿梭框
 - [x] TreeSelect树选择
 - [x] Upload上传
 - [x] Avatar头像
