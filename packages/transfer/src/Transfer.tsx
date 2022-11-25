@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { Button, Checkbox, Divider, Space } from 'antd';
+import { Button, Checkbox, Space } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { CheckboxValueType } from 'antd/es/checkbox/Group';
@@ -23,7 +23,8 @@ const List = ({
                 options,
                 defaultSelects = [],
                 onChange,
-              }: { prefixCls?: string, onChange?: any, options: any[], defaultSelects?: any[] }) => {
+                title
+              }: { title: string, prefixCls?: string, onChange?: any, options: any[], defaultSelects?: any[] }) => {
   const [checkedList, setCheckedList] = useState<CheckboxValueType[]>(defaultSelects);
   const [indeterminate, setIndeterminate] = useState(defaultSelects.length > 0 && defaultSelects.length < options.length);
   const [checkAll, setCheckAll] = useState(false);
@@ -44,7 +45,7 @@ const List = ({
   return <section>
     <section className={`${prefixCls}-li`}>
       <Checkbox indeterminate={indeterminate} onChange={onCheckAllChange} checked={checkAll}>
-        Check all
+        {title}
       </Checkbox>
     </section>
     <div className={`${prefixCls}-line`}></div>
@@ -67,6 +68,7 @@ export const Transfer: React.FC<TransferProps> = (props) => {
     dataSource = [],
     targetKeys = [],
     prefixCls = defaultPrefix,
+    titles
   } = props;
   const [leftData, setLeftData] = useState([]);
   const [rightData, setRightData] = useState([]);
@@ -121,7 +123,7 @@ export const Transfer: React.FC<TransferProps> = (props) => {
 
   return <section className={classNames(prefixCls)}>
     <section className={classNames(`${prefixCls}-source`)}>
-      <List options={leftData} onChange={(l) => {
+      <List title={titles?.[0] || 'Source'} options={leftData} onChange={(l) => {
         setSourceSelectedKeys(l);
       }} />
     </section>
@@ -132,7 +134,7 @@ export const Transfer: React.FC<TransferProps> = (props) => {
       </Space>
     </section>
     <section className={classNames(`${prefixCls}-target`)}>
-      <List options={rightData} onChange={(l) => {
+      <List title={titles?.[1] || 'Target'} options={rightData} onChange={(l) => {
        setTargetSelectedKeys(l);
       }} />
     </section>
