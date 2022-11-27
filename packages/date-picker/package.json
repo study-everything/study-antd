@@ -1,0 +1,26 @@
+{
+	"name": "@study/date-picker",
+	"main": "dist/index.umd.js",
+	"typings": "dist/index.d.ts",
+	"scripts": {
+		"build": "gulp"
+	},
+	"devDependencies": {
+		"react": "^18.1.0"
+	},
+	"peerDependencies": {
+		"react": "^18.1.0"
+	},
+	"dependencies": {
+		"@study/style": "^1.0.0",
+		"@study/util": "^1.0.0",
+		"classname": "^0.0.0",
+		"dom-align": "^1.12.3",
+		"moment": "^2.29.4",
+		"rc-align": "^4.0.12",
+		"rc-motion": "^2.6.0",
+		"resize-observer-polyfill": "^1.5.1",
+		"shallowequal": "^1.1.0",
+		"tslib": "^2.4.0"
+	}
+}

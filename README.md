@@ -36,45 +36,45 @@ $ pnpm -F @study/style build
 - [x] Typography排版
 - [ ] Divider分割线
 - [ ] Grid栅格
-- [ ] Layout布局
+- [x] Layout布局
 - [ ] Space间距
 - [ ] Affix固钉
 - [ ] Breadcrumb面包屑
 - [x] Dropdown下拉菜单
 - [ ] Menu导航菜单
-- [ ] PageHeader页头
+- [x] PageHeader页头
 - [ ] Pagination分页
 - [ ] Steps步骤条
 - [ ] AutoComplete自动完成
 - [ ] Cascader级联选择
 - [ ] Checkbox多选框
-- [ ] DatePicker日期选择框
+- [x] DatePicker日期选择框
 - [ ] Form表单
 - [ ] Input输入框
 - [ ] InputNumber数字输入框
 - [ ] Radio单选框
 - [x] Mentions提及
-- [ ] Rate评分
-- [ ] Select选择器
+- [x] Rate评分
+- [x] Select选择器
 - [ ] Slider滑动输入条
 - [x] Switch开关
-- [ ] TimePicker时间选择框
-- [ ] Transfer穿梭框
+- [x] TimePicker时间选择框
+- [x] Transfer穿梭框
 - [x] TreeSelect树选择
-- [ ] Upload上传
+- [x] Upload上传
 - [x] Avatar头像
 - [ ] Badge徽标数
 - [ ] Calendar日历
 - [x] Card卡片
 - [x] Carousel走马灯
 - [ ] Collapse折叠面板
-- [ ] Comment评论
+- [x] Comment评论
 - [x] Descriptions描述列表
 - [x] Empty空状态
 - [ ] Image图片
 - [ ] List列表
 - [ ] Popover气泡卡片
-- [ ] Segmented分段控制器
+- [x] Segmented分段控制器
 - [ ] Statistic统计数值
 - [ ] Table表格
 - [ ] Tabs标签页

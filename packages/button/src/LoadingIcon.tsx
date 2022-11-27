@@ -1,7 +1,8 @@
-import React from 'react';
-import CSSMotion from 'rc-motion';
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
+import CSSMotion from 'rc-motion';
+import React from 'react';
 
+/** 加载状态下的图标 */
 export interface LoadingIconProps {
   prefixCls: string;
   existIcon: boolean;
@@ -28,7 +29,6 @@ const LoadingIcon: React.FC<LoadingIconProps> = ({ prefixCls, loading, existIcon
   return (
     <CSSMotion
       visible={visible}
-      // We do not really use this motionName
       motionName={`${prefixCls}-loading-icon-motion`}
       removeOnLeave
       onAppearStart={getCollapsedWidth}

@@ -1,275 +1,111 @@
 import React, { useState } from 'react';
+import { SearchOutlined } from '@ant-design/icons';
+import { message } from 'antd';
 import { storiesOf } from '@storybook/react';
-import { SearchOutlined, DownloadOutlined, PoweroffOutlined } from '@ant-design/icons';
-import { Radio } from 'antd';
-import type { SizeType } from './button';
-import Button from './button';
-import './style';
-import './Button.stories.less';
-import type { ButtonGroupProps } from './button-group';
+import { Button } from './button';
+import type { SizeType } from './config-provider/SizeContext'
+import './style'
 
-storiesOf('Button', module)
-  .add('basic', () => (
-    <>
-      <Button type="primary">Primary Button</Button>
-      <Button>Default Button</Button>
-      <Button type="dashed">Dashed Button</Button>
-      <br />
-      <Button type="text">Text Button</Button>
-      <Button type="link">Link Button</Button>
-    </>
-  ))
-  .add('block', () => (
-    <>
-      <Button type="primary" block>
-        Primary
-      </Button>
-      <Button block>Default</Button>
-      <Button type="dashed" block>
-        Dashed
-      </Button>
-      <Button type="link" block>
-        Link
-      </Button>
-    </>
-  ))
-  .add('danger', () => (
-    <>
-      <Button type="primary" danger>
-        Primary
-      </Button>
-      <Button danger>Default</Button>
-      <Button type="dashed" danger>
-        Dashed
-      </Button>
-      <Button type="text" danger>
-        Text
-      </Button>
-      <Button type="link" danger>
-        Link
-      </Button>
-    </>
-  ))
-  .add('disabled', () => (
-    <>
-      <Button type="primary">Primary</Button>
-      <Button type="primary" disabled>
-        Primary(disabled)
-      </Button>
-      <br />
-      <Button>Default</Button>
-      <Button disabled>Default(disabled)</Button>
-      <br />
-      <Button type="dashed">Dashed</Button>
-      <Button type="dashed" disabled>
-        Dashed(disabled)
-      </Button>
-      <br />
-      <Button type="text">Text</Button>
-      <Button type="text" disabled>
-        Text(disabled)
-      </Button>
-      <br />
-      <Button type="link">Link</Button>
-      <Button type="link" disabled>
-        Link(disabled)
-      </Button>
-      <br />
-      <Button danger>Danger Default</Button>
-      <Button danger disabled>
-        Danger Default(disabled)
-      </Button>
-      <br />
-      <Button danger type="text">
-        Danger Text
-      </Button>
-      <Button danger type="text" disabled>
-        Danger Text(disabled)
-      </Button>
-      <br />
-      <Button type="link" danger>
-        Danger Link
-      </Button>
-      <Button type="link" danger disabled>
-        Danger Link(disabled)
-      </Button>
-      <div className="site-button-ghost-wrapper">
-        <Button ghost>Ghost</Button>
-        <Button ghost disabled>
-          Ghost(disabled)
-        </Button>
-      </div>
-    </>
-  ))
-  .add('ghost', () => (
-    <div className="ghost-wrapper">
-      <Button type="primary" ghost>
-        Primary
-      </Button>
-      <Button ghost>Default</Button>
-      <Button type="dashed" ghost>
-        Dashed
-      </Button>
-      <Button type="primary" danger ghost>
-        Danger
-      </Button>
-    </div>
-  ))
-  .add('icon', () => (
-      <>
-        <Button type="primary" shape="circle" icon={<SearchOutlined />} />
-        <Button type="primary" shape="circle">
-          A
-        </Button>
-        <Button type="primary" icon={<SearchOutlined />}>
-          Search
-        </Button>
-        <Button shape="circle" icon={<SearchOutlined />} />
-        <Button icon={<SearchOutlined />}>Search</Button>
-        <br />
-        <Button shape="circle" icon={<SearchOutlined />} />
-        <Button icon={<SearchOutlined />}>Search</Button>
-        <Button type="dashed" shape="circle" icon={<SearchOutlined />} />
-        <Button type="dashed" icon={<SearchOutlined />}>
-          Search
-        </Button>
-        <Button icon={<SearchOutlined />} href="https://www.google.com" />
-        <br />
-        <br />
-        <Button type="primary" shape="circle" icon={<SearchOutlined />} size="large" />
-        <Button type="primary" shape="circle" size="large">
-          A
-        </Button>
-        <Button type="primary" icon={<SearchOutlined />} size="large">
-          Search
-        </Button>
-        <Button shape="circle" icon={<SearchOutlined />} size="large" />
-        <Button icon={<SearchOutlined />} size="large">
-          Search
-        </Button>
-        <br />
-        <Button shape="circle" icon={<SearchOutlined />} size="large" />
-        <Button icon={<SearchOutlined />} size="large">
-          Search
-        </Button>
+const demoContainerStyles = {
+	border: '1px solid rgba(0,0,0,.06)',
+	padding: '20px',
+	marginBottom: '48px',
+}
+const spacing = {
+	marginRight: '8px',
+	marginBottom: '12px'
 
-        <Button type="dashed" shape="circle" icon={<SearchOutlined />} size="large" />
-        <Button type="dashed" icon={<SearchOutlined />} size="large">
-          Search
-        </Button>
-        <Button icon={<SearchOutlined />} size="large" href="https://www.google.com" />
-      </>
-    ))
-  .add('group', () => {
-    const getGroup = (props?: ButtonGroupProps) => (
-      <div>
-        <Button.Group {...props}>
-          <Button type="primary">Button 1</Button>
-          <Button type="primary">Button 2</Button>
-          <Button type="primary" icon={<DownloadOutlined />} disabled />
-          <Button type="primary" icon={<DownloadOutlined />} />
-        </Button.Group>
-      </div>
-    );
+}
 
-    const App: React.FC = () => (
-      <>
-        {getGroup({ size: 'small' })}
-        <br />
-        {getGroup()}
-        <br />
-        {getGroup({ size: 'large' })}
-      </>
-    );
+const clickHandler = () => {
+	message.success('click button!');
+}
 
-    return <App />;
-  })
-  .add('loading', () => {
-    const [loadings, setLoadings] = useState<boolean[]>([]);
+storiesOf('Button', module).add('Demo', () => {
+	const [size, setSize] = useState<SizeType>('middle')
+	const [loading, setLoading] = useState<boolean>(false)
+	const [disabled, setDisabled] = useState<boolean>(false)
 
-    const enterLoading = (index: number) => {
-      setLoadings(prevLoadings => {
-        const newLoadings = [...prevLoadings];
-        newLoadings[index] = true;
-        return newLoadings;
-      });
+	const handleLoading = () => {
+		setLoading(true)
+		setTimeout(() => {
+			setLoading(false)
+			message.success('加载成功！')
+		}, 2000)
+	}
+	return (<div>
+		<div style={demoContainerStyles}>
+			<h2>Button 的种类</h2>
+			<Button style={spacing} onClick={clickHandler} type="primary" >Primary Button</Button>
+			<Button style={spacing} onClick={clickHandler}>Default Button</Button>
+			<Button style={spacing} onClick={clickHandler} type="dashed">Dashed Button</Button>
+			<Button style={spacing} onClick={clickHandler} type="text">Text Button</Button>
+			<Button style={spacing} onClick={clickHandler} type="link">Link Button</Button>
+		</div>
+		<div style={demoContainerStyles}>
+			<h2>Button 的尺寸</h2>
+			<Button.Group style={spacing} >
+				<Button onClick={() => setSize('small')} >small</Button>
+				<Button onClick={() => setSize('middle')} >middle</Button>
+				<Button onClick={() => setSize('large')} >large</Button>
+			</Button.Group>
 
-      setTimeout(() => {
-        setLoadings(prevLoadings => {
-          const newLoadings = [...prevLoadings];
-          newLoadings[index] = false;
-          return newLoadings;
-        });
-      }, 6000);
-    };
+			<div >
+				<Button style={spacing} onClick={clickHandler} size={size} type="primary" >Primary Button</Button>
+				<Button style={spacing} onClick={clickHandler} size={size} >Default Button</Button>
+				<Button style={spacing} onClick={clickHandler} size={size} type="dashed">Dashed Button</Button>
+				<Button style={spacing} onClick={clickHandler} size={size} type="text">Text Button</Button>
+				<Button style={spacing} onClick={clickHandler} size={size} type="link">Link Button</Button>
+			</div>
+		</div>
 
-    return (
-      <>
-        <div style={{ width: '100%' }}>
-          <Button type="primary" loading>
-            Loading
-          </Button>
-          <Button type="primary" size="small" loading>
-            Loading
-          </Button>
-          <Button type="primary" icon={<PoweroffOutlined />} loading />
-        </div>
+		<div style={demoContainerStyles}>
+			<h2>Button 加载状态 Loading...</h2>
+			<Button style={spacing} onClick={clickHandler} loading type="primary" >loading</Button>
+			<Button style={spacing} onClick={handleLoading} loading={loading} >{loading ? 'loading' : 'click'}</Button>
+		</div>
 
-        <div style={{ width: '100%' }}>
-          <Button type="primary" loading={loadings[0]} onClick={() => enterLoading(0)}>
-            Click me!
-          </Button>
-          <Button
-            type="primary"
-            icon={<PoweroffOutlined />}
-            loading={loadings[1]}
-            onClick={() => enterLoading(1)}
-          >
-            Click me!
-          </Button>
-          <Button
-            type="primary"
-            icon={<PoweroffOutlined />}
-            loading={loadings[2]}
-            onClick={() => enterLoading(2)}
-          />
-        </div>
-      </>
-    );
-  })
-  .add('size', () => {
-    const [size, setSize] = useState<SizeType>('large');
+		<div style={{ ...demoContainerStyles, background: '#d3d3d3' }}>
+			<h2>Button Ghost 幽灵按钮</h2>
+			<Button style={spacing} onClick={clickHandler} type="primary" ghost>Primary Button</Button>
+			<Button style={spacing} onClick={clickHandler} ghost>Default Button</Button>
+			<Button style={spacing} onClick={clickHandler} type="dashed" ghost>Dashed Button</Button>
+		</div>
+		<div style={demoContainerStyles}>
+			<h2>Button block</h2>
+			<p>按钮适应父元素宽度</p>
+			<Button type="primary" block >btn1</Button>
+			<Button block>btn2</Button>
+			<Button type="dashed" block>btn3</Button>
+			<Button type="link" block>btn4</Button>
+			<Button type="text" block>btn5</Button>
+		</div>
+		<div style={demoContainerStyles}>
+			<h2>Button icon 图标按钮</h2>
+			<Button style={spacing} type="primary" shape="circle" icon={<SearchOutlined />} />
+			<Button style={spacing} type="primary" shape="circle">R</Button>
+			<Button style={spacing} shape="circle">e</Button>
+			<Button style={spacing} shape="circle">a</Button>
+			<Button style={spacing} shape="circle">c</Button>
+			<Button style={spacing} shape="circle">t</Button>
+			<Button style={spacing} icon={<SearchOutlined />}>Search</Button>
+		</div>
+		<div style={demoContainerStyles}>
+			<h2>Button 不可用状态</h2>
+			<Button style={spacing} onClick={() => setDisabled(!disabled)}>Toggle disabled state</Button>
+			<br />
+			<Button type='primary' style={spacing} disabled={disabled}>Button</Button>
+			<Button type="dashed" style={spacing} disabled={disabled}>Button</Button>
+			<Button type="text" style={spacing} disabled={disabled}>Button</Button>
+		</div>
+		<div style={demoContainerStyles}>
+			<h2>Button danger 危险按钮</h2>
+			<Button type='primary' style={spacing}  danger>Button</Button>
+			<Button style={spacing}  danger>Button</Button>
+			<Button type="dashed" style={spacing}  danger>Button</Button>
+			<Button type="text" style={spacing} danger>Button</Button>
+		</div>
+	</div>)
+})
 
-    return (
-      <>
-        <Radio.Group value={size} onChange={e => setSize(e.target.value)}>
-          <Radio.Button value="large">Large</Radio.Button>
-          <Radio.Button value="default">Default</Radio.Button>
-          <Radio.Button value="small">Small</Radio.Button>
-        </Radio.Group>
-        <br />
-        <br />
-        <Button type="primary" size={size}>
-          Primary
-        </Button>
-        <Button size={size}>Default</Button>
-        <Button type="dashed" size={size}>
-          Dashed
-        </Button>
-        <br />
-        <Button type="link" size={size}>
-          Link
-        </Button>
-        <br />
-        <Button type="primary" icon={<DownloadOutlined />} size={size} />
-        <Button type="primary" shape="circle" icon={<DownloadOutlined />} size={size} />
-        <Button type="primary" shape="round" icon={<DownloadOutlined />} size={size} />
-        <Button type="primary" shape="round" icon={<DownloadOutlined />} size={size}>
-          Download
-        </Button>
-        <Button type="primary" icon={<DownloadOutlined />} size={size}>
-          Download
-        </Button>
-      </>
-    );
-  });
+
