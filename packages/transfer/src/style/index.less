@@ -1,2 +1,43 @@
 @import '~@study/style/src/themes/index.less';
 @import '~@study/style/src/mixins/index.less';
+
+.antd-transform {
+  width: 100%;
+  display: flex;
+  &-source{
+    display: flex;
+    flex-direction: column;
+    width: 180px;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+  }
+  &-middle {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-self: center;
+    margin: 0 8px;
+    vertical-align: middle;
+  }
+  &-line {
+    width: 100%;
+    border-bottom: 1px solid #d9d9d9;
+  }
+  &-target{
+    display: flex;
+    flex-direction: column;
+    width: 180px;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+  }
+  ul {
+    padding: 0;
+  }
+  &-li {
+    padding: 8px 0;
+  }
+  &-li,li {
+    padding-left: 40px;
+    list-style: none;
+  }
+}

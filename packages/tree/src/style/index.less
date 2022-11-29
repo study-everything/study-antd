@@ -1,0 +1,19 @@
+
+@import '~@study/style/src/themes/index.less';
+@import '~@study/style/src/mixins/index.less';
+@import 'antd/es/checkbox/style/mixin.less';
+
+// @import '../../checkbox/style/mixin';
+@import './mixin';
+@import './directory';
+
+@tree-prefix-cls: ~'@{ant-prefix}-tree';
+@tree-node-prefix-cls: ~'@{tree-prefix-cls}-treenode';
+
+.antCheckboxFn(@checkbox-prefix-cls: ~'@{ant-prefix}-tree-checkbox');
+
+.@{tree-prefix-cls} {
+  .antTreeFn(@tree-prefix-cls);
+}
+
+@import './rtl';
