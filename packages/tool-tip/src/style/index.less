@@ -1,0 +1,88 @@
+
+@import '~@study/style/src/themes/index.less';
+@import '~@study/style/src/mixins/index.less';
+
+.layout{
+  position: relative;
+  display: inline-block;
+}
+.x{
+  color: red;
+  display: inline-block;
+}
+.bottom{
+  position: absolute;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 2px 10px;
+  &::after{
+      content: "";
+      width: 0;
+      height: 0;
+      border:  8px solid transparent;
+      border-bottom-color: inherit;
+      position: absolute;
+      top: 4px;
+      right: calc(50% - 8px);
+      margin-top: -19px;
+  }
+}
+
+.top{
+  position: absolute;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 2px 10px;
+  &::after{
+      content: "";
+      width: 0;
+      height: 0;
+      border:  8px solid transparent;
+      border-top-color: inherit;
+      position: absolute;
+      bottom: -16px;
+      right: calc(50% - 8px);
+      margin-top: -19px;
+  }
+}
+
+
+.right{
+  position: absolute;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 2px 10px;
+  max-width: 150px;
+  &::after{
+      content: "";
+      width: 0;
+      height: 0;
+      border:  8px solid transparent;
+      border-left-color: inherit;
+      position: absolute;
+      margin-top: -19px;
+      right: -16px;
+      bottom: calc(50% - 8px);
+  }
+}
+
+
+
+.left{
+  position: absolute;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 2px 10px;
+  max-width: 150px;
+  &::after{
+      content: "";
+      width: 0;
+      height: 0;
+      border:  8px solid transparent;
+      border-right-color: inherit;
+      position: absolute;
+      margin-top: -19px;
+      left: -16px;
+      bottom: calc(50% - 8px);
+  }
+}
