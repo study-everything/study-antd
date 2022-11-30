@@ -1,4 +1,4 @@
-import { PresetColorTypes } from './utils/colors';
+import { PresetColorTypes } from './colors';
 
 // eslint-disable-next-line import/prefer-default-export
 export function isPresetColor(color?: string): boolean {
