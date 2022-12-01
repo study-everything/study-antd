@@ -52,6 +52,7 @@ const Badge: CompoundedComponent = ({
   // direction 方向
   const { getPrefixCls, direction } = React.useContext(ConfigContext);
   const prefixCls = getPrefixCls('badge', customizePrefixCls);
+
   // count 展示的数字，超过 overflowCount 时显示为 ${overflowCount}+，为 0 时隐藏
   const numberedDisplayCount = (
     (count as number) > (overflowCount as number) ? `${overflowCount}+` : count
@@ -71,6 +72,7 @@ const Badge: CompoundedComponent = ({
   // 展示 dot 或者 count
   const mergedCount = showAsDot ? '' : numberedDisplayCount;
 
+  // 隐藏展示徽标
   const isHidden = useMemo(() => {
     const isEmpty = mergedCount === null || mergedCount === undefined || mergedCount === '';
     return (isEmpty || (isZero && !showZero)) && !showAsDot;
@@ -132,7 +134,7 @@ const Badge: CompoundedComponent = ({
           },
         }));
 
-  // <Badge status="success" />
+  // 无子节点 eg: <Badge status="success" />
   if (!children && hasStatus) {
     const statusTextColor = mergedStyle.color;
     return (
@@ -146,7 +148,7 @@ const Badge: CompoundedComponent = ({
       </span>
     );
   }
-  // <Badge status="success" count={<Icon type="xxx" />}></Badge>
+  // 有子节点的 eg：<Badge status="success" count={<Icon type="xxx" />}></Badge>
   return (
     <span {...restProps} className={badgeClassName}>
       {children}
@@ -184,38 +186,28 @@ const Badge: CompoundedComponent = ({
           const newProps = {
             ...restProps,
             'data-show': !isHidden,
-            style,
+            style: scrollNumberStyle,
             className: classNames(scrollPrefixCls, scrollNumberCls, motionClassName),
             title: title as string,
           };
 
           const numberNodes: React.ReactNode = mergedCount;
-          if (style && style.borderColor) {
+          if (scrollNumberStyle && scrollNumberStyle.borderColor) {
             newProps.style = {
-              ...style,
+              ...scrollNumberStyle,
               boxShadow: `0 0 0 1px ${style.borderColor} inset`,
             };
           }
           if (displayNode) {
             return cloneElement(displayNode, oriProps => ({
               className: classNames(
-                `${prefixCls}-custom-component`,
+                `${scrollPrefixCls}-custom-component`,
                 oriProps?.className,
                 motionClassName,
               ),
             }));
           }
           return React.createElement('sup', newProps, numberNodes);
-
-          // prefixCls={scrollNumberPrefixCls}
-          // show={!isHidden}
-          // motionClassName={motionClassName}
-          // className={scrollNumberCls}
-          // count={displayCount}
-          // title={titleNode}
-          // style={scrollNumberStyle}
-          // key="scrollNumber"
-          // return <span>4</span>;
         }}
       </CSSMotion>
       {statusTextNode}
