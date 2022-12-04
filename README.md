@@ -43,7 +43,7 @@ $ pnpm -F @study/style build
 - [x] Dropdown下拉菜单
 - [ ] Menu导航菜单
 - [x] PageHeader页头
-- [ ] Pagination分页
+- [x] Pagination分页
 - [ ] Steps步骤条
 - [ ] AutoComplete自动完成
 - [ ] Cascader级联选择
