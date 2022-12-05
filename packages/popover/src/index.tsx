@@ -1,4 +1,3 @@
-
 export type { PopoverProps } from './popover';
 
-export { Popover } from './popover';
+export { default as Popover } from './popover';

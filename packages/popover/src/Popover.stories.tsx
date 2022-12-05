@@ -1,10 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { Popover }from './Popover';
-import './style'
+import { Popover } from '.';
+import './style';
 
-storiesOf('Popover', module).add('Demo', () => (	
-	<>
-		<Popover />
-	</> 
-))
+storiesOf('Popover', module).add('Demo', () => <Popover />);
