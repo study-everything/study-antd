@@ -73,7 +73,7 @@ $ pnpm -F @study/style build
 - [x] Empty空状态
 - [ ] Image图片
 - [ ] List列表
-- [ ] Popover气泡卡片
+- [x] Popover气泡卡片
 - [x] Segmented分段控制器
 - [ ] Statistic统计数值
 - [ ] Table表格

@@ -824,6 +824,21 @@ importers:
     devDependencies:
       react: 18.2.0
 
+  packages/popover:
+    specifiers:
+      '@study/style': ^1.0.0
+      '@study/util': ^1.0.0
+      classname: ^0.0.0
+      react: ^18.1.0
+      tslib: ^2.4.0
+    dependencies:
+      '@study/style': link:../style
+      '@study/util': link:../util
+      classname: 0.0.0
+      tslib: 2.4.1
+    devDependencies:
+      react: 18.2.0
+
   packages/rate:
     specifiers:
       '@study/style': ^1.0.0
@@ -11562,7 +11577,7 @@ packages:
     dev: true
 
   /mime/2.6.0:
-    resolution: {integrity: sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==, registry: https://registry.npm.taobao.org/}
+    resolution: {integrity: sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npm.taobao.org/mime/-/mime-2.6.0.tgz}
     engines: {node: '>=4.0.0'}
     hasBin: true
     dev: true
